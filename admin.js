@@ -1,13 +1,10 @@
-// URL base da API do teu backend (ligará ao container backend na rede do Docker)
 const API_URL = '/api';
 
-// Carregar dados iniciais ao abrir o painel admin
 window.addEventListener('DOMContentLoaded', () => {
     carregarPedidos();
     carregarProjetos();
 });
 
-// Alternar entre as abas do painel admin
 function switchTab(tab) {
     const tabPedidos = document.getElementById('tab-pedidos');
     const tabProjetos = document.getElementById('tab-projetos');
@@ -29,9 +26,7 @@ function switchTab(tab) {
     }
 }
 
-// ---------------------------------------------------------
-// 1. GESTÃO DE PEDIDOS DE ORÇAMENTO & SOS
-// ---------------------------------------------------------
+// PEDIDOS
 async function carregarPedidos() {
     try {
         const response = await fetch(`${API_URL}/pedidos`);
@@ -73,27 +68,21 @@ async function carregarPedidos() {
             tbody.appendChild(tr);
         });
     } catch (err) {
-        console.error('Erro ao comunicar com o servidor para carregar pedidos:', err);
+        console.error('Erro ao carregar pedidos:', err);
     }
 }
 
 async function eliminarPedido(id) {
-    if (confirm('Tens a certeza que queres eliminar este pedido da base de dados?')) {
+    if (confirm('Tens a certeza que queres eliminar este pedido?')) {
         try {
             const response = await fetch(`${API_URL}/pedidos/${id}`, { method: 'DELETE' });
-            if (response.ok) {
-                carregarPedidos();
-            } else {
-                alert('Erro ao tentar eliminar o pedido.');
-            }
+            if (response.ok) carregarPedidos();
         } catch (err) {
-            console.error('Erro de rede:', err);
-            alert('Não foi possível ligar ao servidor.');
+            console.error('Erro:', err);
         }
     }
 }
 
-// Função auxiliar mantida para testes visuais locais (enquanto o backend não está ativo)
 async function simularNovoPedido() {
     const novoPedido = {
         nome: 'Cliente Teste Local',
@@ -101,29 +90,19 @@ async function simularNovoPedido() {
         categoria: 'discord-bots',
         mensagem: 'Olá! Quero simular um pedido de orçamento via interface admin.'
     };
-
     try {
         const response = await fetch(`${API_URL}/pedidos`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(novoPedido)
         });
-
-        if (response.ok) {
-            carregarPedidos();
-        } else {
-            alert('Erro ao simular pedido na base de dados.');
-        }
+        if (response.ok) carregarPedidos();
     } catch (err) {
-        console.error('Servidor offline:', err);
-        alert('Backend desligado. Certifica-te de que o servidor está a correr para gravar na BD.');
+        console.error('Erro:', err);
     }
 }
 
-
-// ---------------------------------------------------------
-// 2. GESTÃO DE PROJETOS DO PORTFÓLIO
-// ---------------------------------------------------------
+// PROJETOS
 async function carregarProjetos() {
     try {
         const response = await fetch(`${API_URL}/projetos`);
@@ -144,20 +123,22 @@ async function carregarProjetos() {
             const tags = Array.isArray(item.tags) ? item.tags : (item.tags ? item.tags.split(',') : []);
             const tagsHtml = tags.map(t => `<span class="px-2 py-0.5 rounded bg-slate-900 text-slate-400 text-[10px] border border-slate-800">${t.trim()}</span>`).join(' ');
 
+            const imgsCount = Array.isArray(item.imagens) ? item.imagens.length : 0;
+
             div.innerHTML = `
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-3">
                         <span class="text-2xl">${item.logo}</span>
                         <div>
                             <h4 class="font-bold text-white text-sm">${item.nome}</h4>
-                            <span class="text-[10px] font-mono text-amber-400">${item.categoria}</span>
+                            <span class="text-[10px] font-mono text-amber-400">${item.categoria} // ${imgsCount} prints extra</span>
                         </div>
                     </div>
                     <button onclick="eliminarProjeto(${item.id})" class="px-2.5 py-1 rounded bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/30 text-[10px] font-mono transition-all">
                         Remover
                     </button>
                 </div>
-                <p class="text-xs text-slate-400 line-clamp-2">${item.descricao || item.desc || ''}</p>
+                <p class="text-xs text-slate-400 line-clamp-2">${item.descricao || ''}</p>
                 <div class="flex flex-wrap gap-1.5 pt-1">${tagsHtml}</div>
             `;
             container.appendChild(div);
@@ -175,9 +156,11 @@ async function adicionarProjeto(e) {
     const link = document.getElementById('proj-link').value || '#';
     const logo = document.getElementById('proj-logo').value || '⚡';
     const tagsRaw = document.getElementById('proj-tags').value;
+    const imagensRaw = document.getElementById('proj-imagens').value;
     const descricao = document.getElementById('proj-desc').value;
 
     const tags = tagsRaw ? tagsRaw.split(',').map(t => t.trim()) : ['Tech'];
+    const imagens = imagensRaw ? imagensRaw.split(',').map(img => img.trim()).filter(img => img.length > 0) : [];
 
     const novoProjeto = {
         nome,
@@ -185,7 +168,8 @@ async function adicionarProjeto(e) {
         logo,
         descricao,
         link,
-        tags
+        tags,
+        imagens
     };
 
     try {
@@ -209,17 +193,12 @@ async function adicionarProjeto(e) {
 }
 
 async function eliminarProjeto(id) {
-    if (confirm('Tens a certeza que queres eliminar este projeto da base de dados?')) {
+    if (confirm('Tens a certeza que queres eliminar este projeto?')) {
         try {
             const response = await fetch(`${API_URL}/projetos/${id}`, { method: 'DELETE' });
-            if (response.ok) {
-                carregarProjetos();
-            } else {
-                alert('Erro ao eliminar o projeto.');
-            }
+            if (response.ok) carregarProjetos();
         } catch (err) {
-            console.error('Erro de rede:', err);
-            alert('Não foi possível ligar ao servidor.');
+            console.error('Erro:', err);
         }
     }
 }
