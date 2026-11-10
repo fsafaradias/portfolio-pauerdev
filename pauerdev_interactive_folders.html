@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PauerDev.help | Interactive Folder Architecture & Studio CLI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        html, body {
+            background-color: #060911 !important;
+            color: #F3F4F6 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+        }
+        .font-mono {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Engineered Studio Grid */
+        .bg-grid-studio {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+        }
+
+        /* Interactive Spotlight */
+        .spotlight {
+            background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(245, 158, 11, 0.08), transparent 45%);
+        }
+
+        /* Folder Tab Styling */
+        .folder-tab {
+            clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Advanced Card Glow */
+        .studio-card-glow {
+            position: relative;
+            background: rgba(13, 19, 33, 0.85);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .studio-card-glow::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: 25px;
+            padding: 1px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02), rgba(245, 158, 11, 0.15));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+            transition: all 0.35s ease;
+        }
+        .studio-card-glow:hover::before {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.5), rgba(239, 68, 68, 0.3), rgba(255, 255, 255, 0.08));
+        }
+        .studio-card-glow:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(245, 158, 11, 0.2);
+        }
+
+        ::-webkit-scrollbar { width: 7px; }
+        ::-webkit-scrollbar-track { background: #060911; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+    </style>
+</head>
+<body class="selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden bg-grid-studio spotlight bg-[#060911]">
+
+    <!-- Ambient Mesh Glows -->
+    <div class="fixed top-[-10%] left-[20%] w-[600px] h-[600px] bg-amber-600/10 rounded-full blur-[160px] pointer-events-none z-0"></div>
+    <div class="fixed top-[40%] right-[-10%] w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[160px] pointer-events-none z-0"></div>
+
+    <!-- Header / Navbar -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-[#060911]/90 backdrop-blur-2xl border-b border-slate-800/80">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <!-- Logotipo Completo em SVG (Isotipo + Texto) -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 120" class="h-10 sm:h-12 w-auto transition-transform group-hover:scale-105">
+                    <defs>
+                        <!-- Gradiente Âmbar / Laranja com IDs únicos -->
+                        <linearGradient id="pauer-nav-orange" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFB703" />
+                            <stop offset="50%" stop-color="#FB8500" />
+                            <stop offset="100%" stop-color="#D97706" />
+                        </linearGradient>
+
+                        <!-- Gradiente Vermelho SOS -->
+                        <linearGradient id="pauer-nav-red" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FF4D4D" />
+                            <stop offset="100%" stop-color="#DC2626" />
+                        </linearGradient>
+
+                        <!-- Moldura Escudo -->
+                        <linearGradient id="pauer-nav-shield-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="rgba(255, 255, 255, 0.25)" />
+                            <stop offset="50%" stop-color="rgba(251, 133, 0, 0.2)" />
+                            <stop offset="100%" stop-color="rgba(220, 38, 38, 0.3)" />
+                        </linearGradient>
+
+                        <linearGradient id="pauer-nav-shield-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#0F172A" stop-opacity="0.9" />
+                            <stop offset="100%" stop-color="#070A11" stop-opacity="0.95" />
+                        </linearGradient>
+
+                        <!-- Filtro de Brilho Neon -->
+                        <filter id="pauer-nav-neon" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <!-- SÍMBOLO / ISOTIPO -->
+                    <g transform="translate(10, 10)">
+                        <polygon points="50,5 90,27.5 90,72.5 50,95 10,72.5 10,27.5" fill="url(#pauer-nav-shield-bg)" stroke="url(#pauer-nav-shield-stroke)" stroke-width="2" stroke-linejoin="round" />
+                        
+                        <circle cx="50" cy="5" r="2.5" fill="#FB8500" />
+                        <circle cx="90" cy="27.5" r="2.5" fill="#FB8500" />
+                        <circle cx="90" cy="72.5" r="2.5" fill="#DC2626" />
+                        <circle cx="50" cy="95" r="2.5" fill="#DC2626" />
+                        <circle cx="10" cy="72.5" r="2.5" fill="#FB8500" />
+                        <circle cx="10" cy="27.5" r="2.5" fill="#FB8500" />
+
+                        <path d="M 28 35 L 18 50 L 28 65" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M 72 35 L 82 50 L 72 65" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
+                        <path d="M 54 18 L 32 52 L 48 52 L 44 82 L 68 46 L 52 46 Z" fill="url(#pauer-nav-orange)" stroke="#FFB703" stroke-width="1.5" stroke-linejoin="round" filter="url(#pauer-nav-neon)" />
+                        <circle cx="78" cy="22" r="3" fill="#FF4D4D" filter="url(#pauer-nav-neon)" />
+                    </g>
+
+                    <!-- TEXTO DO LOGOTIPO -->
+                    <text x="120" y="62" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="40" font-weight="900" letter-spacing="2">PAUER</text>
+                    <text x="285" y="62" font-family="'Fira Code', monospace" font-size="34" font-weight="700" letter-spacing="-1">
+                        <tspan fill="url(#pauer-nav-orange)">Dev</tspan><tspan fill="url(#pauer-nav-red)">.help</tspan>
+                    </text>
+                    <text x="122" y="86" fill="#64748B" font-family="'Fira Code', monospace" font-size="11" font-weight="600" letter-spacing="3">STUDIO ARCHITECTURE // RESCUE CLI</text>
+                    <circle cx="485" cy="54" r="4" fill="#22C55E" filter="url(#pauer-nav-neon)" />
+                </svg>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                <a href="#servicos" class="hover:text-white transition-colors">Pastas de Serviços</a>
+                <a href="#pauerhelps" class="hover:text-red-400 transition-colors flex items-center gap-2 text-red-400 font-bold">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    PauerHelps (SOS)
+                </a>
+                <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
+            </nav>
+
+            <a href="#contacto" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs tracking-wider uppercase transition-all shadow-lg shadow-amber-500/15">
+                Pedir Orçamento
+            </a>
+        </div>
+    </header>
+
+    <main class="pt-28">
+        <!-- Hero Section com CLI -->
+        <section class="max-w-6xl mx-auto px-6 py-16 relative z-10">
+            <div class="space-y-8 text-center max-w-4xl mx-auto">
+                <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-amber-500/20 bg-amber-500/10 text-amber-300 text-xs font-mono">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                    STUDIO ARCHITECTURE & EMERGENCY CLI
+                </div>
+
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.08]">
+                    Aplicações Web, Automações & <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-red-500">Engenharia de Resgate SOS</span>
+                </h1>
+
+                <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
+                    Sou o <strong>Francisco Safara Dias</strong>. Navega nas pastas de serviços abaixo para explorares projetos reais extraídos do meu GitHub e veres soluções em ação.
+                </p>
+
+                <!-- TERMINAL CLI INTERATIVO -->
+                <div class="w-full rounded-3xl overflow-hidden border border-slate-800 bg-slate-950/95 backdrop-blur-2xl shadow-2xl text-left font-mono text-xs my-8 relative">
+                    <div class="bg-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+                            <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+                            <span class="text-[11px] text-slate-400 font-semibold ml-2">⚡ pauer-studio-cli v6.0</span>
+                        </div>
+                        <span class="text-[11px] text-amber-400 font-mono">STATUS: ONLINE</span>
+                    </div>
+
+                    <div id="terminal-body" class="p-6 h-64 overflow-y-auto space-y-2 text-slate-300">
+                        <div class="text-slate-500">[PAUER-DEV STUDIO ARCHITECTURE LOADED]</div>
+                        <div class="text-slate-400">Escreve <span class="text-amber-400 font-bold">'pauer --help'</span> para executar comandos.</div>
+                    </div>
+
+                    <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center">
+                        <span class="text-amber-400 font-bold mr-2">pauer@studio:~$</span>
+                        <input id="terminal-input" type="text" class="flex-1 bg-transparent border-none outline-none text-amber-300 font-mono text-xs" placeholder="Escreve 'pauer --help'..." />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECÇÃO DE PASTAS INTERATIVAS (DESKTOP OS ARCHITECTURE) -->
+        <section id="servicos" class="max-w-6xl mx-auto px-6 py-16 relative z-10">
+            <div class="mb-8">
+                <h2 class="text-xs font-mono font-bold text-amber-400 tracking-widest uppercase mb-2">// Pastas de Serviços & GitHub Live</h2>
+                <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Arquivos de Projetos Interativos</h3>
+            </div>
+
+            <!-- Abas de Pastas -->
+            <div class="flex flex-wrap items-end gap-2 border-b border-slate-800">
+                <button onclick="switchFolder('automation')" id="tab-automation" class="px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 bg-slate-900 text-amber-400 border border-slate-800 border-b-0 shadow-lg">
+                    📁 <span>/automacao-scripts</span>
+                    <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-[10px] text-amber-300">3 Repos</span>
+                </button>
+                <button onclick="switchFolder('webapps')" id="tab-webapps" class="px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 bg-slate-950/60 text-slate-500 border border-transparent hover:text-slate-300">
+                    📁 <span>/web-apps-saas</span>
+                    <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] text-slate-400">2 Repos</span>
+                </button>
+                <button onclick="switchFolder('websites')" id="tab-websites" class="px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 bg-slate-950/60 text-slate-500 border border-transparent hover:text-slate-300">
+                    📁 <span>/websites-landing</span>
+                    <span class="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] text-slate-400">2 Repos</span>
+                </button>
+                <button onclick="switchFolder('rescue')" id="tab-rescue" class="px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 bg-slate-950/60 text-slate-500 border border-transparent hover:text-red-400">
+                    📁 <span>/pauerhelps-sos</span>
+                    <span class="px-2 py-0.5 rounded-full bg-red-500/20 text-[10px] text-red-400">Priority</span>
+                </button>
+            </div>
+
+            <!-- Corpo da Pasta Aberta -->
+            <div class="p-8 rounded-b-3xl studio-card-glow border border-slate-800 bg-slate-950/90 min-h-[420px]">
+                
+                <!-- Conteúdo Pasta: Automação -->
+                <div id="folder-automation" class="space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                        <div>
+                            <h4 class="text-xl font-bold text-white flex items-center gap-2">
+                                🤖 Automações & Web Scraping em Python / Node
+                            </h4>
+                            <p class="text-xs text-slate-400 mt-1">Scripts construídos para extração maciça de dados, automação de tarefas e bots Telegram.</p>
+                        </div>
+                        <a href="https://github.com/fsafaradias" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-xs font-mono text-amber-400 transition-all flex items-center gap-2">
+                            <span>github.com/fsafaradias</span> ↗
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4 hover:border-amber-500/40 transition-all">
+                            <div class="flex items-center justify-between text-xs font-mono">
+                                <span class="text-amber-400 font-bold">fsafaradias / python-scraper</span>
+                                <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[10px]">Python</span>
+                            </div>
+                            <h5 class="font-bold text-white text-sm">Automated Data Scraper</h5>
+                            <p class="text-xs text-slate-400">Bot em Python utilizando Playwright e Beautiful Soup para extração diária de preços e envio de alertas.</p>
+                            <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                                <span>⭐ 14 stars</span>
+                                <span class="text-emerald-400">🟢 Active Script</span>
+                            </div>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4 hover:border-amber-500/40 transition-all">
+                            <div class="flex items-center justify-between text-xs font-mono">
+                                <span class="text-amber-400 font-bold">fsafaradias / telegram-notify-bot</span>
+                                <span class="px-2 py-0.5 rounded bg-orange-500/10 text-orange-300 text-[10px]">Node.js</span>
+                            </div>
+                            <h5 class="font-bold text-white text-sm">Telegram Alert Pipeline</h5>
+                            <p class="text-xs text-slate-400">Bot em Node.js integrado com webhooks para notificações em tempo real de falhas de servidor.</p>
+                            <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                                <span>⭐ 8 stars</span>
+                                <span class="text-emerald-400">🟢 Active Script</span>
+                            </div>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4 hover:border-amber-500/40 transition-all">
+                            <div class="flex items-center justify-between text-xs font-mono">
+                                <span class="text-amber-400 font-bold">fsafaradias / csv-data-processor</span>
+                                <span class="px-2 py-0.5 rounded bg-blue-500/10 text-blue-300 text-[10px]">Python/Pandas</span>
+                            </div>
+                            <h5 class="font-bold text-white text-sm">Batch Data Converter</h5>
+                            <p class="text-xs text-slate-400">Pipeline de higienização e transformação automatizada de ficheiros CSV/Excel de grande volume.</p>
+                            <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                                <span>⭐ 19 stars</span>
+                                <span class="text-emerald-400">🟢 Active Tool</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conteúdo Pasta: Web Apps -->
+                <div id="folder-webapps" class="space-y-6 hidden">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                        <div>
+                            <h4 class="text-xl font-bold text-white flex items-center gap-2">
+                                💻 Aplicações Web Full-Stack & SaaS
+                            </h4>
+                            <p class="text-xs text-slate-400 mt-1">Plataformas dinâmicas com Next.js, autenticação, bases de dados e dashboards.</p>
+                        </div>
+                        <a href="https://github.com/fsafaradias" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-xs font-mono text-amber-400 transition-all">
+                            github.com/fsafaradias ↗
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+                            <div class="flex items-center justify-between text-xs font-mono">
+                                <span class="text-amber-400 font-bold">fsafaradias / saas-dashboard-pro</span>
+                                <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-[10px]">Next.js 14</span>
+                            </div>
+                            <h5 class="font-bold text-white text-sm">Dashboard de Métricas & Vendas</h5>
+                            <p class="text-xs text-slate-400">Painel interativo com controlo de permissões, gráficos em tempo real e integração de pagamentos via Stripe.</p>
+                            <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                                <span>TypeScript • React</span>
+                                <span class="text-emerald-400">🟢 Deployed</span>
+                            </div>
+                        </div>
+
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+                            <div class="flex items-center justify-between text-xs font-mono">
+                                <span class="text-amber-400 font-bold">fsafaradias / client-portal-api</span>
+                                <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-300 text-[10px]">Node/Express</span>
+                            </div>
+                            <h5 class="font-bold text-white text-sm">API REST & Auth Engine</h5>
+                            <p class="text-xs text-slate-400">Backend seguro em Node.js com autenticação JWT, encriptação de dados e ORM PostgreSQL.</p>
+                            <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-[11px] font-mono text-slate-500">
+                                <span>PostgreSQL • Redis</span>
+                                <span class="text-emerald-400">🟢 Deployed</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conteúdo Pasta: Websites -->
+                <div id="folder-websites" class="space-y-6 hidden">
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-4">
+                        <div>
+                            <h4 class="text-xl font-bold text-white flex items-center gap-2">
+                                🌐 Websites High-Performance & Landing Pages
+                            </h4>
+                            <p class="text-xs text-slate-400 mt-1">Sites institucionais com 100/100 no Lighthouse e otimização total de SEO.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+                            <div class="flex items-center justify-between text-xs font-mono">
+                                <span class="text-amber-400 font-bold">fsafaradias / studio-landing-template</span>
+                                <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-300 text-[10px]">HTML5 / Tailwind</span>
+                            </div>
+                            <h5 class="font-bold text-white text-sm">High-Conversion Landing Page</h5>
+                            <p class="text-xs text-slate-400">Página de conversão com tempos de carregamento sob 0.4s e animações CSS otimizadas.</p>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+                            <div class="flex items-center justify-between text-xs font-mono">
+                                <span class="text-amber-400 font-bold">fsafaradias / pauerdev-portfolio</span>
+                                <span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 text-[10px]">Astro / React</span>
+                            </div>
+                            <h5 class="font-bold text-white text-sm">Minimalist Tech Portfolio</h5>
+                            <p class="text-xs text-slate-400">Portfólio interativo com sistema de terminal CLI e arquitetura de pastas de código.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Conteúdo Pasta: PauerHelps SOS -->
+                <div id="folder-rescue" class="space-y-6 hidden">
+                    <div class="flex items-center justify-between border-b border-red-500/30 pb-4">
+                        <div>
+                            <h4 class="text-xl font-bold text-white flex items-center gap-2">
+                                🚨 PauerHelps — Serviço de Resgate Técnico Urgente
+                            </h4>
+                            <p class="text-xs text-slate-400 mt-1">Intervenções críticas em direto para salvar deploys, reparar APIs e eliminar bugs impeditivos.</p>
+                        </div>
+                    </div>
+
+                    <div class="p-6 rounded-2xl bg-gradient-to-r from-red-950/40 via-slate-900 to-amber-950/20 border border-red-500/40 space-y-4">
+                        <h5 class="font-bold text-white text-base">Precisas de ajuda técnica imediata?</h5>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            O protocolo PauerHelps garante diagnóstico inicial em menos de 1 hora e resolução ativa de bugs urgentes em produção.
+                        </p>
+                        <a href="#contacto" onclick="selectEmergency('Bug Crítico SOS')" class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold text-xs uppercase tracking-wider">
+                            Ativar Socorro Técnico Agora
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Formulário de Contacto -->
+        <section id="contacto" class="max-w-3xl mx-auto px-6 py-20 relative z-10">
+            <div class="studio-card-glow p-8 sm:p-12 border border-slate-800">
+                <h3 class="text-2xl font-bold text-white mb-2">Pedir Ajuda ou Orçamento</h3>
+                <p class="text-slate-400 text-xs mb-8">Descreve o teu projeto ou o problema que precisas de ver resolvido.</p>
+
+                <form class="space-y-4" onsubmit="event.preventDefault(); alert('Mensagem enviada com sucesso para PauerDev.help!');">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <input type="text" placeholder="O teu nome" required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-600 text-xs focus:outline-none focus:border-amber-500"/>
+                        <input type="email" placeholder="E-mail de contacto" required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-600 text-xs focus:outline-none focus:border-amber-500"/>
+                    </div>
+                    <select id="form-select" class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white text-xs focus:outline-none focus:border-amber-500">
+                        <option value="automation">⚡ Automação / Script (Python/Node)</option>
+                        <option value="app">💻 Aplicação Web / SaaS</option>
+                        <option value="website">🌐 Website ou Landing Page</option>
+                        <option value="rescue">🚨 PauerHelps (Ajuda Urgente / Debug)</option>
+                    </select>
+                    <textarea id="form-msg" rows="4" placeholder="Detalhes do pedido..." required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-600 text-xs focus:outline-none focus:border-amber-500"></textarea>
+
+                    <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg shadow-amber-500/15">
+                        Enviar Mensagem // PauerDev.help
+                    </button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-slate-800/80 py-8 text-center text-xs font-mono text-slate-500 relative z-10">
+        © 2026 PauerDev.help — Francisco Safara Dias. Todos os direitos reservados.
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        // Spotlight Tracker
+        window.addEventListener('mousemove', e => {
+            document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
+            document.body.style.setProperty('--mouse-y', `${e.clientY}px`);
+        });
+
+        // Folder Switching Logic
+        const folderIds = ['automation', 'webapps', 'websites', 'rescue'];
+
+        function switchFolder(activeId) {
+            folderIds.forEach(id => {
+                const tab = document.getElementById('tab-' + id);
+                const folder = document.getElementById('folder-' + id);
+
+                if (id === activeId) {
+                    folder.classList.remove('hidden');
+                    tab.className = id === 'rescue' 
+                        ? "px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 bg-slate-900 text-red-400 border border-slate-800 border-b-0 shadow-lg"
+                        : "px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 bg-slate-900 text-amber-400 border border-slate-800 border-b-0 shadow-lg";
+                } else {
+                    folder.classList.add('hidden');
+                    tab.className = "px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 bg-slate-950/60 text-slate-500 border border-transparent hover:text-slate-300";
+                }
+            });
+        }
+
+        // Terminal CLI JS
+        const input = document.getElementById('terminal-input');
+        const body = document.getElementById('terminal-body');
+
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const rawCmd = this.value.trim();
+                const cmd = rawCmd.toLowerCase();
+                
+                const cmdLine = document.createElement('div');
+                cmdLine.className = 'text-amber-400 font-semibold';
+                cmdLine.textContent = '> ' + rawCmd;
+                body.appendChild(cmdLine);
+
+                let resp = '';
+                if (cmd === 'pauer --help' || cmd === 'help') {
+                    resp = "COMANDOS DISPONÍVEIS:\n • pauer --services : Ver pastas de serviços\n • pauer --github   : Abrir GitHub (fsafaradias)\n • pauer --rescue   : Ativar SOS técnico urgente\n • clear            : Limpar consola";
+                } else if (cmd === 'pauer --services') {
+                    resp = "[1] Automações & Scripts (Python, Bots, Web Scraping)\n[2] Aplicações Web (Next.js, React, Node)\n[3] Websites & Landing Pages\n[4] PauerHelps Dev Rescue";
+                } else if (cmd === 'pauer --github') {
+                    window.open('https://github.com/fsafaradias', '_blank');
+                    resp = "A abrir https://github.com/fsafaradias...";
+                } else if (cmd === 'pauer --rescue') {
+                    switchFolder('rescue');
+                    resp = "🚨 PauerHelps SOS ativado. Abrindo pasta de emergência...";
+                } else if (cmd === 'clear') {
+                    body.innerHTML = '';
+                    this.value = '';
+                    return;
+                } else {
+                    resp = "Comando '" + rawCmd + "' não reconhecido. Escreve 'pauer --help'.";
+                }
+
+                const respLine = document.createElement('div');
+                respLine.className = 'text-emerald-400 whitespace-pre-wrap';
+                respLine.textContent = resp;
+                body.appendChild(respLine);
+                body.scrollTop = body.scrollHeight;
+                this.value = '';
+            }
+        });
+
+        function selectEmergency(label) {
+            document.getElementById('form-select').value = 'rescue';
+            document.getElementById('form-msg').value = '[SOS URGENTE]: ' + label + '. Necessito de assistência imediata.';
+            document.getElementById('contacto').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
