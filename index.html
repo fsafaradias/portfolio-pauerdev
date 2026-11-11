@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PauerDev.help | Interactive Folder Architecture & Studio CLI</title>
+    <title>PauerDev.help — Showcase de Projetos</title>
+    <!-- Tailwind CSS (Classes utilitárias) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Ficheiro de Estilos Personalizado -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden bg-grid-studio spotlight bg-[#060911]">
 
-    <!-- Ambient Mesh Glows -->
-    <div class="fixed top-[-10%] left-[20%] w-[600px] h-[600px] bg-amber-600/10 rounded-full blur-[160px] pointer-events-none z-0"></div>
-    <div class="fixed top-[40%] right-[-10%] w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[160px] pointer-events-none z-0"></div>
+    <!-- Brilhos de Fundo Neon Ambientais -->
+    <div class="glow-ambient top-[-10%] left-[20%] bg-amber-600/10"></div>
+    <div class="glow-ambient top-[40%] right-[-10%] bg-red-600/10"></div>
+    <div class="glow-ambient bottom-[10%] left-[-5%] bg-blue-600/10"></div>
 
-    <!-- Header / Navbar -->
+    <!-- Header / Barra de Navegação -->
     <header class="fixed top-0 left-0 w-full z-50 bg-[#060911]/90 backdrop-blur-2xl border-b border-slate-800/80">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-3 group">
@@ -24,19 +27,23 @@
                             <stop offset="50%" stop-color="#FB8500" />
                             <stop offset="100%" stop-color="#D97706" />
                         </linearGradient>
+
                         <linearGradient id="pauer-nav-red" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#FF4D4D" />
                             <stop offset="100%" stop-color="#DC2626" />
                         </linearGradient>
+
                         <linearGradient id="pauer-nav-shield-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="rgba(255, 255, 255, 0.25)" />
                             <stop offset="50%" stop-color="rgba(251, 133, 0, 0.2)" />
                             <stop offset="100%" stop-color="rgba(220, 38, 38, 0.3)" />
                         </linearGradient>
+
                         <linearGradient id="pauer-nav-shield-bg" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stop-color="#0F172A" stop-opacity="0.9" />
                             <stop offset="100%" stop-color="#070A11" stop-opacity="0.95" />
                         </linearGradient>
+
                         <filter id="pauer-nav-neon" x="-20%" y="-20%" width="140%" height="140%">
                             <feGaussianBlur stdDeviation="3" result="blur" />
                             <feMerge>
@@ -45,6 +52,7 @@
                             </feMerge>
                         </filter>
                     </defs>
+
                     <g transform="translate(10, 10)">
                         <polygon points="50,5 90,27.5 90,72.5 50,95 10,72.5 10,27.5" fill="url(#pauer-nav-shield-bg)" stroke="url(#pauer-nav-shield-stroke)" stroke-width="2" stroke-linejoin="round" />
                         <circle cx="50" cy="5" r="2.5" fill="#FB8500" />
@@ -53,27 +61,32 @@
                         <circle cx="50" cy="95" r="2.5" fill="#DC2626" />
                         <circle cx="10" cy="72.5" r="2.5" fill="#FB8500" />
                         <circle cx="10" cy="27.5" r="2.5" fill="#FB8500" />
+
                         <path d="M 28 35 L 18 50 L 28 65" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                         <path d="M 72 35 L 82 50 L 72 65" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
                         <path d="M 54 18 L 32 52 L 48 52 L 44 82 L 68 46 L 52 46 Z" fill="url(#pauer-nav-orange)" stroke="#FFB703" stroke-width="1.5" stroke-linejoin="round" filter="url(#pauer-nav-neon)" />
                         <circle cx="78" cy="22" r="3" fill="#FF4D4D" filter="url(#pauer-nav-neon)" />
                     </g>
+
                     <text x="120" y="62" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="40" font-weight="900" letter-spacing="2">PAUER</text>
                     <text x="285" y="62" font-family="'Fira Code', monospace" font-size="34" font-weight="700" letter-spacing="-1">
                         <tspan fill="url(#pauer-nav-orange)">Dev</tspan><tspan fill="url(#pauer-nav-red)">.help</tspan>
                     </text>
                     <text x="122" y="86" fill="#64748B" font-family="'Fira Code', monospace" font-size="11" font-weight="600" letter-spacing="3">STUDIO ARCHITECTURE // RESCUE CLI</text>
-                    <circle cx="485" cy="54" r="4" fill="#22C55E" filter="url(#pauer-nav-neon)" />
                 </svg>
             </a>
-            <nav class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-widest text-slate-400">
-                <a href="#servicos" class="hover:text-white transition-colors">Pastas de Serviços</a>
-                <a href="#pauerhelps" class="hover:text-red-400 transition-colors flex items-center gap-2 text-red-400 font-bold">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-                    PauerHelps (SOS)
+
+            <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                <a href="#sec-discord-bots" class="hover:text-amber-400 transition-colors">Discord Bots</a>
+                <a href="#sec-software-tools" class="hover:text-amber-400 transition-colors">Software Tools</a>
+                <a href="#sec-game-development" class="hover:text-amber-400 transition-colors">Game Dev</a>
+                <a href="#sec-web-development" class="hover:text-amber-400 transition-colors">Web Dev</a>
+                <a href="#pauerhelps" class="text-red-400 hover:text-red-300 font-bold flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> SOS
                 </a>
-                <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
             </nav>
+
             <a href="#contacto" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs tracking-wider uppercase transition-all shadow-lg shadow-amber-500/15">
                 Pedir Orçamento
             </a>
@@ -81,19 +94,23 @@
     </header>
 
     <main class="pt-28">
-        <!-- Hero Section com CLI -->
-        <section class="max-w-6xl mx-auto px-6 py-16 relative z-10">
-            <div class="space-y-8 text-center max-w-4xl mx-auto">
+        <!-- Hero Section com Efeito Typewriter em CSS -->
+        <section class="max-w-6xl mx-auto px-6 py-16 relative z-10 text-center">
+            <div class="space-y-8 max-w-4xl mx-auto">
                 <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-amber-500/20 bg-amber-500/10 text-amber-300 text-xs font-mono">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                    STUDIO ARCHITECTURE & EMERGENCY CLI
+                    PAUERDEV STUDIO ARCHITECTURE
                 </div>
-                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.08]">
-                    Projetos por Categoria & <br/>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-red-500">File Explorer Dedicado</span>
+
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.1] min-h-[120px] flex flex-col justify-center items-center">
+                    <span>Projetos focados em</span>
+                    <div class="typewriter-wrapper mt-2 font-mono">
+                        <span class="typewriter-text text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-red-500 px-1"></span>
+                    </div>
                 </h1>
+
                 <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                    Explora as categorias abaixo. Em cada categoria tens um File Explorer próprio onde cada pasta corresponde a um projeto individual.
+                    Sou o <strong>Francisco Safara Dias</strong>. Explora as secções abaixo com os projetos carregados diretamente da base de dados PostgreSQL.
                 </p>
 
                 <!-- TERMINAL CLI INTERATIVO -->
@@ -107,10 +124,12 @@
                         </div>
                         <span class="text-[11px] text-amber-400 font-mono">STATUS: ONLINE</span>
                     </div>
-                    <div id="terminal-body" class="p-6 h-64 overflow-y-auto space-y-2 text-slate-300">
+
+                    <div id="terminal-body" class="p-6 h-48 overflow-y-auto space-y-2 text-slate-300">
                         <div class="text-slate-500">[PAUER-DEV STUDIO ARCHITECTURE LOADED]</div>
                         <div class="text-slate-400">Escreve <span class="text-amber-400 font-bold">'pauer --help'</span> para executar comandos.</div>
                     </div>
+
                     <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center">
                         <span class="text-amber-400 font-bold mr-2">pauer@studio:~$</span>
                         <input id="terminal-input" type="text" class="flex-1 bg-transparent border-none outline-none text-amber-300 font-mono text-xs" placeholder="Escreve 'pauer --help'..." />
@@ -119,23 +138,11 @@
             </div>
         </section>
 
-        <!-- SECÇÃO DE PASTAS DE CATEGORIAS E FILE EXPLORER DE PROJETOS -->
-        <section id="servicos" class="max-w-6xl mx-auto px-6 py-16 relative z-10">
-            <div class="mb-8">
-                <h2 class="text-xs font-mono font-bold text-amber-400 tracking-widest uppercase mb-2">// Pastas de Serviços & File Explorer</h2>
-                <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Categorias & Projetos</h3>
-            </div>
-
-            <!-- Abas Principais de Categoria (Discord Bots, Software Tools, Game Dev, Web Dev) -->
-            <div id="pastas-tabs" class="flex flex-wrap items-end gap-2 border-b border-slate-800">
-                <!-- Gerado dinamicamente via script.js -->
-            </div>
-
-            <!-- Contentor Principal -->
-            <div id="pastas-container" class="p-6 sm:p-8 rounded-b-3xl studio-card-glow border border-slate-800 bg-slate-950/90 min-h-[480px]">
-                <div class="text-center py-16 text-slate-500 font-mono text-xs">A carregar categorias e projetos...</div>
-            </div>
-        </section>
+        <!-- CONTENTOR DINÂMICO DOS PROJETOS DA BASE DE DADOS -->
+        <div id="projetos-container">
+            <!-- Os projetos serão injetados dinamicamente aqui via JavaScript -->
+            <div class="text-center py-16 text-slate-500 font-mono text-xs">A carregar projetos da base de dados...</div>
+        </div>
 
         <!-- SECÇÃO PAUERHELPS SOS -->
         <section id="pauerhelps" class="max-w-6xl mx-auto px-6 py-12 relative z-10">
@@ -145,19 +152,20 @@
                     <h4 class="text-xl font-bold text-white">🚨 PauerHelps — Serviço de Resgate Técnico Urgente (SOS)</h4>
                 </div>
                 <p class="text-xs text-slate-300 leading-relaxed max-w-3xl">
-                    Falha crítica no teu bot, servidor em baixo ou bug bloqueante em produção? O protocolo PauerHelps garante resposta técnica imediata.
+                    Falha crítica no teu bot, servidor em baixo ou bug bloqueante em produção? O protocolo PauerHelps garante resposta técnica imediata e intervenção direta.
                 </p>
-                <a href="#contacto" onclick="selectEmergency('Bug Crítico SOS')" class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all">
+                <a href="#contacto" onclick="selectEmergency('Bug Crítico SOS')" class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity">
                     Ativar Socorro Técnico Agora
                 </a>
             </div>
         </section>
 
-        <!-- Formulário de Contacto -->
+        <!-- FORMULÁRIO DE CONTACTO -->
         <section id="contacto" class="max-w-3xl mx-auto px-6 py-20 relative z-10">
             <div class="studio-card-glow p-8 sm:p-12 border border-slate-800">
                 <h3 class="text-2xl font-bold text-white mb-2">Pedir Ajuda ou Orçamento</h3>
                 <p class="text-slate-400 text-xs mb-8">Descreve o teu projeto ou o problema que precisas de ver resolvido.</p>
+
                 <form id="form-contacto" class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <input type="text" id="form-nome" placeholder="O teu nome" required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-600 text-xs focus:outline-none focus:border-amber-500"/>
@@ -171,6 +179,7 @@
                         <option value="rescue">🚨 PauerHelps (SOS Urgente / Debug)</option>
                     </select>
                     <textarea id="form-msg" rows="4" placeholder="Detalhes do pedido..." required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-600 text-xs focus:outline-none focus:border-amber-500"></textarea>
+
                     <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg shadow-amber-500/15">
                         Enviar Mensagem // PauerDev.help
                     </button>
@@ -183,6 +192,7 @@
         © 2026 PauerDev.help — Francisco Safara Dias. Todos os direitos reservados.
     </footer>
 
+    <!-- Ficheiro de Scripts Personalizado -->
     <script src="script.js"></script>
 </body>
 </html>

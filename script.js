@@ -1,245 +1,132 @@
-// ==========================================
-// SCRIPT PRINCIPAL DO PORTFÓLIO - PAUERDEV.HELP
-// FILE EXPLORER POR CATEGORIA COM PASTAS DE PROJETOS
-// ==========================================
-
+// Rastreamento do rato para o efeito Spotlight no fundo
 window.addEventListener('mousemove', e => {
     document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
-    document.body.style.setProperty('--mouse-y', `${e.clientY}px`);
+    document.body.style.setProperty('--mouse-y`, `${e.clientY}px`);
 });
 
+// Carregar projetos da Base de Dados via API ao iniciar a página
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('/api/projetos');
-        if (!response.ok) throw new Error('Falha ao comunicar com a API');
         const projetos = await response.json();
-        renderizarAbasCategorias(projetos);
+        renderizarProjetos(projetos);
     } catch (err) {
         console.error('Erro ao carregar projetos da base de dados:', err);
-        const container = document.getElementById('pastas-container');
+        const container = document.getElementById('projetos-container');
         if (container) {
             container.innerHTML = `<div class="text-center py-12 text-red-400 font-mono text-xs">Erro ao ligar à base de dados para carregar projetos.</div>`;
         }
     }
 });
 
-function renderizarAbasCategorias(projetos) {
-    const tabsContainer = document.getElementById('pastas-tabs');
-    const container = document.getElementById('pastas-container');
-    if (!tabsContainer || !container) return;
+function renderizarProjetos(projetos) {
+    const container = document.getElementById('projetos-container');
+    if (!container) return;
 
     if (!projetos || projetos.length === 0) {
         container.innerHTML = `<div class="text-center py-12 text-slate-500 font-mono text-xs">Ainda não existem projetos registados na base de dados.</div>`;
         return;
     }
 
-    // Configuração exata das 4 categorias solicitadas
+    // Mapeamento de categorias para IDs e títulos do HTML
     const categoriasConfig = {
-        'discord-bots': { id: 'discord-bots', title: '🤖 discord-bots', label: '/discord-bots', desc: 'Automação para comunidades e bots interativos em Node.js.' },
-        'software-tools': { id: 'software-tools', title: '🛠️ software-tools', label: '/software-tools', desc: 'Ferramentas utilitárias, scripts de automação e web scraping.' },
-        'game-development': { id: 'game-development', title: '🎮 game-development', label: '/game-development', desc: 'Desenvolvimento de videojogos 2D/3D e protótipos interativos.' },
-        'web-development': { id: 'web-development', title: '🌐 web-development', label: '/web-development', desc: 'Aplicações web modernas, plataformas SaaS e APIs de alta performance.' }
+        'discord-bots': { id: 'sec-discord-bots', title: '🤖 discord-bots', desc: 'Automação para comunidades, bots de moderação e sistemas interativos.' },
+        'software-tools': { id: 'sec-software-tools', title: '🛠️ software-tools', desc: 'Ferramentas utilitárias e de automação de sistema.' },
+        'game-development': { id: 'sec-game-development', title: '🎮 game-development', desc: 'Desenvolvimento de videojogos 2D/3D e protótipos interativos.' },
+        'web-development': { id: 'sec-web-development', title: '🌐 web-development', desc: 'Aplicações web modernas, plataformas SaaS e APIs de alta performance.' }
     };
 
     // Agrupar projetos por categoria
     const agrupados = {};
-    Object.keys(categoriasConfig).forEach(catKey => { agrupados[catKey] = []; });
-    
     projetos.forEach(proj => {
         const cat = proj.categoria || 'software-tools';
         if (!agrupados[cat]) agrupados[cat] = [];
         agrupados[cat].push(proj);
     });
 
-    const catKeys = Object.keys(categoriasConfig);
+    let htmlFinal = '';
 
-    // Renderizar Abas Superiores das Categorias Principais
-    let tabsHtml = '';
-    catKeys.forEach((catKey, index) => {
-        const config = categoriasConfig[catKey];
-        const projsCat = agrupados[catKey];
-        const isActive = index === 0;
+    for (const [catKey, projsCat] of Object.entries(agrupados)) {
+        const config = categoriasConfig[catKey] || { id: `sec-${catKey}`, title: `📁 ${catKey}`, desc: 'Projetos da categoria.' };
 
-        tabsHtml += `
-            <button onclick="switchCategory('${config.id}')" id="tab-cat-${config.id}" class="px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2.5 ${isActive ? 'bg-slate-900 text-amber-400 border border-slate-800 border-b-0 shadow-lg' : 'bg-slate-950/60 text-slate-500 border border-transparent hover:text-slate-300'}">
-                <span>📁</span> <span>${config.label}</span>
-                <span class="px-2.5 py-0.5 rounded-full ${isActive ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 text-slate-400'} text-[10px]">${projsCat.length}</span>
-            </button>
-        `;
-    });
-    tabsContainer.innerHTML = tabsHtml;
-
-    // Renderizar Conteúdos e File Explorers Individuais para cada Categoria
-    let contentsHtml = '';
-    catKeys.forEach((catKey, index) => {
-        const config = categoriasConfig[catKey];
-        const projsCat = agrupados[catKey];
-        const isActive = index === 0;
-
-        contentsHtml += `<div id="cat-content-${config.id}" class="space-y-6 ${isActive ? '' : 'hidden'}">`;
-        contentsHtml += `
-            <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 flex-wrap gap-4">
-                <div>
-                    <h4 class="text-xl font-bold text-white">${config.title}</h4>
-                    <p class="text-xs text-slate-400 mt-1">${config.desc}</p>
+        htmlFinal += `
+        <section id="${config.id}" class="max-w-6xl mx-auto px-6 py-16 relative z-10 border-t border-slate-800/60">
+            <div class="mb-8">
+                <div class="inline-block px-3 py-1 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono mb-3">
+                    // CATEGORIA: ${catKey.toUpperCase()}
                 </div>
-                <div class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs text-amber-400">
-                    file-explorer / ${catKey} (${projsCat.length} projetos)
-                </div>
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-white tracking-tight flex items-center gap-3">
+                    ${config.title}
+                </h2>
+                <p class="text-slate-400 text-sm mt-2 max-w-2xl">${config.desc}</p>
             </div>
+            <div class="space-y-6">
         `;
 
-        if (projsCat.length === 0) {
-            contentsHtml += `<div class="text-center py-12 text-slate-500 font-mono text-xs">Sem projetos nesta categoria de momento.</div></div>`;
-            return;
-        }
-
-        // FILE EXPLORER INTERNO DA CATEGORIA (Pastas de cada projeto em cima)
-        contentsHtml += `<div class="space-y-6" id="explorer-wrapper-${config.id}">`;
-        contentsHtml += `<div class="flex flex-wrap items-center gap-2 p-2.5 rounded-2xl bg-slate-900/90 border border-slate-800">`;
-        
-        projsCat.forEach((proj, pIdx) => {
-            const isProjActive = pIdx === 0;
-            const projKey = proj.id || `p-${pIdx}`;
-            contentsHtml += `
-                <button onclick="switchProjectFolder('${config.id}', '${projKey}')" id="proj-tab-${config.id}-${projKey}" class="px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 ${isProjActive ? 'bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-md' : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'}">
-                    <span>📂</span> <span>/${proj.nome.toLowerCase().replace(/\s+/g, '-')}</span>
-                </button>
-            `;
-        });
-        contentsHtml += `</div>`;
-
-        // INFORMAÇÕES DO PROJETO SELECIONADO (Nome, Link, Logo, Imagens [2 a 8] e Descrição)
-        projsCat.forEach((proj, pIdx) => {
-            const isProjActive = pIdx === 0;
-            const projKey = proj.id || `p-${pIdx}`;
-
-            // Tratamento do Logo
-            let logoHtml = '⚡';
-            if (proj.logo) {
-                if (proj.logo.startsWith('http') || proj.logo.startsWith('/assets/')) {
-                    logoHtml = `<img src="${proj.logo}" alt="Logo" class="w-full h-full object-cover">`;
-                } else {
-                    logoHtml = proj.logo;
-                }
+        projsCat.forEach(proj => {
+            // Renderizar tags se existirem
+            let tagsHtml = '';
+            if (proj.tags && Array.isArray(proj.tags)) {
+                tagsHtml = proj.tags.map(t => `<span class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 border border-slate-800">${t}</span>`).join('');
             }
 
-            // Tratamento da Galeria de Imagens (2 a 8 imagens)
+            // Renderizar imagens/prints adicionais se existirem
             let printsHtml = '';
-            let imagensArray = [];
-            if (proj.imagens) {
-                imagensArray = Array.isArray(proj.imagens) ? proj.imagens : proj.imagens.replace(/[{}]/g, '').split(',').map(img => img.trim()).filter(Boolean);
-            }
-
-            if (imagensArray.length > 0) {
+            if (proj.imagens && Array.isArray(proj.imagens) && proj.imagens.length > 0) {
                 printsHtml = `
-                <div class="space-y-2.5 pt-4 border-t border-slate-800/80">
-                    <span class="text-[11px] font-mono text-amber-400 uppercase font-bold">// Imagens do Projeto (${imagensArray.length})</span>
-                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        ${imagensArray.map((imgUrl, idx) => `
-                            <div class="rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden group/img shadow-inner">
-                                <img src="${imgUrl}" alt="Imagem ${idx+1}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0f172a/64748b?text=Projeto+Img';">
+                <div class="space-y-2 pt-2">
+                    <span class="text-xs font-mono text-slate-400 uppercase">// Capturas de Ecrã</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        ${proj.imagens.map((imgUrl, idx) => `
+                            <div class="rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center text-xs font-mono text-slate-500 overflow-hidden">
+                                <img src="${imgUrl}" alt="Print ${idx+1}" class="w-full h-full object-cover">
                             </div>
                         `).join('')}
                     </div>
                 </div>`;
             }
 
-            // Tags
-            let tagsHtml = '';
-            if (proj.tags) {
-                let tagsArray = Array.isArray(proj.tags) ? proj.tags : proj.tags.replace(/[{}]/g, '').split(',').map(t => t.trim()).filter(Boolean);
-                tagsHtml = tagsArray.map(t => `<span class="px-2.5 py-1 rounded-md bg-slate-900 text-slate-400 border border-slate-800 text-[11px] font-mono">${t}</span>`).join('');
-            }
-
-            contentsHtml += `
-                <div id="proj-panel-${config.id}-${projKey}" class="studio-card-glow p-6 sm:p-8 space-y-6 ${isProjActive ? '' : 'hidden'}">
-                    <div class="flex items-start justify-between gap-4 flex-wrap">
-                        <div class="flex items-center gap-4">
-                            <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-700/80 flex items-center justify-center text-3xl shadow-lg shrink-0 overflow-hidden">
-                                ${logoHtml}
-                            </div>
-                            <div>
-                                <span class="text-[11px] font-mono text-amber-400 uppercase tracking-widest">Pasta Ativa // ${proj.nome}</span>
-                                <h5 class="text-2xl font-bold text-white mt-0.5">${proj.nome}</h5>
-                            </div>
+            htmlFinal += `
+            <div class="studio-card-glow p-8 border border-slate-800 bg-slate-950/90 space-y-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <div class="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-900/50 border border-slate-800 text-center relative overflow-hidden group">
+                        <div class="w-28 h-28 rounded-2xl bg-slate-900 border-2 border-slate-700 flex items-center justify-center text-5xl shadow-2xl mb-4 z-10 overflow-hidden">
+                            ${proj.logo && proj.logo.startsWith('http') ? `<img src="${proj.logo}" alt="Logo" class="w-full h-full object-cover">` : (proj.logo || '⚡')}
                         </div>
-                        ${proj.link ? `<a href="${proj.link}" target="_blank" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-xs font-mono text-amber-400 transition-all flex items-center gap-2 shadow">Ver Link / Repositório ↗</a>` : ''}
+                        <h4 class="text-lg font-bold text-white z-10">${proj.nome}</h4>
+                        <span class="text-xs font-mono text-amber-400 z-10 mt-1">${proj.categoria}</span>
                     </div>
 
-                    <div class="space-y-2">
-                        <span class="text-[11px] font-mono text-slate-500 uppercase">// Descrição do Projeto</span>
-                        <p class="text-sm text-slate-300 leading-relaxed bg-slate-900/50 p-4 rounded-xl border border-slate-800/60">${proj.descricao}</p>
-                    </div>
+                    <div class="lg:col-span-8 space-y-4">
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <h3 class="text-2xl font-extrabold text-white">${proj.nome}</h3>
+                            ${proj.link ? `<a href="${proj.link}" target="_blank" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-xs font-mono text-amber-400 transition-all">Ver Repositório / Demo ↗</a>` : ''}
+                        </div>
 
-                    ${printsHtml}
+                        <p class="text-sm text-slate-300 leading-relaxed">${proj.descricao}</p>
 
-                    <div class="flex flex-wrap gap-1.5 pt-2">
-                        ${tagsHtml}
+                        ${printsHtml}
+
+                        <div class="flex flex-wrap gap-2 pt-2 text-xs font-mono">
+                            ${tagsHtml}
+                        </div>
                     </div>
                 </div>
-            `;
+            </div>`;
         });
 
-        contentsHtml += `</div></div>`;
-    });
+        htmlFinal += `</div></section>`;
+    }
 
-    container.innerHTML = contentsHtml;
-    window._catKeys = catKeys;
+    container.innerHTML = htmlFinal;
 }
 
-// Alternar entre categorias principais (Discord Bots, Software Tools, Game Dev, Web Dev)
-function switchCategory(activeId) {
-    if (!window._catKeys) return;
-    window._catKeys.forEach(id => {
-        const tab = document.getElementById('tab-cat-' + id);
-        const content = document.getElementById('cat-content-' + id);
-        if (!tab || !content) return;
-
-        if (id === activeId) {
-            content.classList.remove('hidden');
-            tab.className = "px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2.5 bg-slate-900 text-amber-400 border border-slate-800 border-b-0 shadow-lg";
-            const badge = tab.querySelector('span:last-child');
-            if (badge) badge.className = "px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px]";
-        } else {
-            content.classList.add('hidden');
-            tab.className = "px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2.5 bg-slate-950/60 text-slate-500 border border-transparent hover:text-slate-300";
-            const badge = tab.querySelector('span:last-child');
-            if (badge) badge.className = "px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px]";
-        }
-    });
-}
-
-// Alternar entre pastas de projetos no File Explorer superior de cada categoria
-function switchProjectFolder(catId, projKey) {
-    const wrapper = document.getElementById('explorer-wrapper-' + catId);
-    if (!wrapper) return;
-
-    const buttons = wrapper.querySelectorAll(`[id^="proj-tab-${catId}-"]`);
-    const panels = wrapper.querySelectorAll(`[id^="proj-panel-${catId}-"]`);
-
-    buttons.forEach(btn => {
-        if (btn.id === `proj-tab-${catId}-${projKey}`) {
-            btn.className = "px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-md";
-        } else {
-            btn.className = "px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 bg-slate-950 text-slate-400 border border-slate-800 hover:text-white";
-        }
-    });
-
-    panels.forEach(panel => {
-        if (panel.id === `proj-panel-${catId}-${projKey}`) {
-            panel.classList.remove('hidden');
-        } else {
-            panel.classList.add('hidden');
-        }
-    });
-}
-
-// Formulário de Contacto
+// Lógica de submissão do formulário de contacto ligada à API POST /api/pedidos
 const formContacto = document.getElementById('form-contacto');
 if (formContacto) {
     formContacto.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         const nome = document.getElementById('form-nome').value;
         const email = document.getElementById('form-email').value;
         const categoria = document.getElementById('form-select').value;
@@ -265,7 +152,7 @@ if (formContacto) {
     });
 }
 
-// Terminal CLI
+// Lógica da Consola / Terminal CLI Interativo
 const input = document.getElementById('terminal-input');
 const body = document.getElementById('terminal-body');
 
@@ -281,13 +168,21 @@ if (input && body) {
             body.appendChild(cmdLine);
 
             let resp = '';
+            
             if (cmd === 'pauer --help' || cmd === 'help') {
-                resp = "COMANDOS DISPONÍVEIS:\n • pauer --services : Ver pastas de serviços\n • pauer --github   : Abrir GitHub (fsafaradias)\n • pauer --rescue   : Ativar SOS técnico urgente\n • clear            : Limpar consola";
-            } else if (cmd === 'pauer --services') {
-                resp = "File explorers por categoria carregados com sucesso.";
-            } else if (cmd === 'pauer --github') {
-                window.open('https://github.com/fsafaradias', '_blank');
-                resp = "A abrir https://github.com/fsafaradias...";
+                resp = "COMANDOS DISPONÍVEIS:\n • pauer --discord   : Ir para secção /discord-bots\n • pauer --software  : Ir para secção /software-tools\n • pauer --games     : Ir para secção /game-development\n • pauer --web       : Ir para secção /web-development\n • pauer --rescue    : Ir para o SOS PauerHelps\n • clear             : Limpar ecrã";
+            } else if (cmd === 'pauer --discord') {
+                document.getElementById('sec-discord-bots')?.scrollIntoView({ behavior: 'smooth' });
+                resp = "Navegando para a secção /discord-bots...";
+            } else if (cmd === 'pauer --software') {
+                document.getElementById('sec-software-tools')?.scrollIntoView({ behavior: 'smooth' });
+                resp = "Navegando para a secção /software-tools...";
+            } else if (cmd === 'pauer --games') {
+                document.getElementById('sec-game-development')?.scrollIntoView({ behavior: 'smooth' });
+                resp = "Navegando para a secção /game-development...";
+            } else if (cmd === 'pauer --web') {
+                document.getElementById('sec-web-development')?.scrollIntoView({ behavior: 'smooth' });
+                resp = "Navegando para a secção /web-development...";
             } else if (cmd === 'pauer --rescue') {
                 document.getElementById('pauerhelps')?.scrollIntoView({ behavior: 'smooth' });
                 resp = "🚨 PauerHelps SOS ativado!";
@@ -303,6 +198,7 @@ if (input && body) {
             respLine.className = 'text-emerald-400 whitespace-pre-wrap';
             respLine.textContent = resp;
             body.appendChild(respLine);
+            
             body.scrollTop = body.scrollHeight;
             this.value = '';
         }
@@ -313,6 +209,7 @@ function selectEmergency(label) {
     const select = document.getElementById('form-select');
     const msg = document.getElementById('form-msg');
     const contacto = document.getElementById('contacto');
+
     if (select) select.value = 'rescue';
     if (msg) msg.value = '[SOS URGENTE]: ' + label + '. Necessito de assistência técnica urgente.';
     if (contacto) contacto.scrollIntoView({ behavior: 'smooth' });

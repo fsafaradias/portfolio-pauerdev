@@ -76,6 +76,58 @@ html, body {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(245, 158, 11, 0.15);
 }
 
+/* =========================================================
+   CSS TYPEWRITER EFFECT (ESCREVER E APAGAR)
+   ========================================================= */
+.typewriter-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.typewriter-text {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 3px solid #f59e0b;
+    animation: 
+        typewriter-loop 12s steps(25) infinite,
+        blink-cursor 0.75s step-end infinite;
+}
+
+.typewriter-text::before {
+    content: "discord-bots";
+    animation: typewriter-phrases 12s infinite;
+}
+
+/* Troca sequencial das 4 frases */
+@keyframes typewriter-phrases {
+    0%, 22% { content: "discord-bots"; }
+    25%, 47% { content: "software-tools"; }
+    50%, 72% { content: "game-development"; }
+    75%, 97% { content: "web-development"; }
+}
+
+/* Ciclo de escrita (0% -> 100% de largura) e apagamento */
+@keyframes typewriter-loop {
+    0% { width: 0; }
+    15%, 22% { width: 100%; }
+    25% { width: 0; }
+    40%, 47% { width: 100%; }
+    50% { width: 0; }
+    65%, 72% { width: 100%; }
+    75% { width: 0; }
+    90%, 97% { width: 100%; }
+    100% { width: 0; }
+}
+
+/* Animação do cursor a piscar */
+@keyframes blink-cursor {
+    from, to { border-color: transparent; }
+    50% { border-color: #f59e0b; }
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar { width: 7px; }
 ::-webkit-scrollbar-track { background: #060911; }
