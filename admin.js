@@ -1,8 +1,9 @@
 const API_URL = '/api';
 
+// Rastreamento do rato para o efeito Spotlight no fundo
 window.addEventListener('mousemove', e => {
     document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
-    document.body.style.setProperty('--mouse-y`, `${e.clientY}px`);
+    document.body.style.setProperty('--mouse-y', `${e.clientY}px`);
 });
 
 // TESTE DE ARRANCAMENTO
