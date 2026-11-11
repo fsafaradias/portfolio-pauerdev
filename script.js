@@ -1,7 +1,22 @@
-// Rastreamento do rato para o efeito Spotlight no fundo
-window.addEventListener('mousemove', e => {
-    document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
-    document.body.style.setProperty('--mouse-y', `${e.clientY}px`);
+// Efeito de Fundo Animado Automático (Partículas Flutuantes)
+document.addEventListener('DOMContentLoaded', () => {
+    const body = document.body;
+    const numParticles = 20;
+
+    for (let i = 0; i < numParticles; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'absolute rounded-full pointer-events-none opacity-20 animate-pulse';
+        
+        const size = Math.random() * 4 + 1;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.top = `${Math.random() * 100}%`;
+        particle.style.left = `${Math.random() * 100}%`;
+        particle.style.backgroundColor = i % 2 === 0 ? '#FB8500' : '#FF4D4D';
+        particle.style.animationDuration = `${Math.random() * 3 + 2}s`;
+        
+        body.appendChild(particle);
+    }
 });
 
 // Carregar projetos da Base de Dados via API ao iniciar a página
@@ -28,7 +43,6 @@ function renderizarProjetos(projetos) {
         return;
     }
 
-    // Mapeamento de categorias para IDs e títulos do HTML
     const categoriasConfig = {
         'discord-bots': { id: 'sec-discord-bots', title: '🤖 discord-bots', desc: 'Automação para comunidades, bots de moderação e sistemas interativos.' },
         'software-tools': { id: 'sec-software-tools', title: '🛠️ software-tools', desc: 'Ferramentas utilitárias e de automação de sistema.' },
@@ -36,7 +50,6 @@ function renderizarProjetos(projetos) {
         'web-development': { id: 'sec-web-development', title: '🌐 web-development', desc: 'Aplicações web modernas, plataformas SaaS e APIs de alta performance.' }
     };
 
-    // Agrupar projetos por categoria
     const agrupados = {};
     projetos.forEach(proj => {
         const cat = proj.categoria || 'software-tools';
@@ -64,13 +77,11 @@ function renderizarProjetos(projetos) {
         `;
 
         projsCat.forEach(proj => {
-            // Renderizar tags se existirem
             let tagsHtml = '';
             if (proj.tags && Array.isArray(proj.tags)) {
                 tagsHtml = proj.tags.map(t => `<span class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 border border-slate-800">${t}</span>`).join('');
             }
 
-            // Renderizar imagens/prints adicionais se existirem
             let printsHtml = '';
             if (proj.imagens && Array.isArray(proj.imagens) && proj.imagens.length > 0) {
                 printsHtml = `
