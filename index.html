@@ -24,23 +24,19 @@
                             <stop offset="50%" stop-color="#FB8500" />
                             <stop offset="100%" stop-color="#D97706" />
                         </linearGradient>
-
                         <linearGradient id="pauer-nav-red" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#FF4D4D" />
                             <stop offset="100%" stop-color="#DC2626" />
                         </linearGradient>
-
                         <linearGradient id="pauer-nav-shield-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="rgba(255, 255, 255, 0.25)" />
                             <stop offset="50%" stop-color="rgba(251, 133, 0, 0.2)" />
                             <stop offset="100%" stop-color="rgba(220, 38, 38, 0.3)" />
                         </linearGradient>
-
                         <linearGradient id="pauer-nav-shield-bg" x1="0%" y1="0%" x2="0%" y2="100%">
                             <stop offset="0%" stop-color="#0F172A" stop-opacity="0.9" />
                             <stop offset="100%" stop-color="#070A11" stop-opacity="0.95" />
                         </linearGradient>
-
                         <filter id="pauer-nav-neon" x="-20%" y="-20%" width="140%" height="140%">
                             <feGaussianBlur stdDeviation="3" result="blur" />
                             <feMerge>
@@ -49,7 +45,6 @@
                             </feMerge>
                         </filter>
                     </defs>
-
                     <g transform="translate(10, 10)">
                         <polygon points="50,5 90,27.5 90,72.5 50,95 10,72.5 10,27.5" fill="url(#pauer-nav-shield-bg)" stroke="url(#pauer-nav-shield-stroke)" stroke-width="2" stroke-linejoin="round" />
                         <circle cx="50" cy="5" r="2.5" fill="#FB8500" />
@@ -58,14 +53,11 @@
                         <circle cx="50" cy="95" r="2.5" fill="#DC2626" />
                         <circle cx="10" cy="72.5" r="2.5" fill="#FB8500" />
                         <circle cx="10" cy="27.5" r="2.5" fill="#FB8500" />
-
                         <path d="M 28 35 L 18 50 L 28 65" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                         <path d="M 72 35 L 82 50 L 72 65" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-
                         <path d="M 54 18 L 32 52 L 48 52 L 44 82 L 68 46 L 52 46 Z" fill="url(#pauer-nav-orange)" stroke="#FFB703" stroke-width="1.5" stroke-linejoin="round" filter="url(#pauer-nav-neon)" />
                         <circle cx="78" cy="22" r="3" fill="#FF4D4D" filter="url(#pauer-nav-neon)" />
                     </g>
-
                     <text x="120" y="62" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="40" font-weight="900" letter-spacing="2">PAUER</text>
                     <text x="285" y="62" font-family="'Fira Code', monospace" font-size="34" font-weight="700" letter-spacing="-1">
                         <tspan fill="url(#pauer-nav-orange)">Dev</tspan><tspan fill="url(#pauer-nav-red)">.help</tspan>
@@ -74,7 +66,6 @@
                     <circle cx="485" cy="54" r="4" fill="#22C55E" filter="url(#pauer-nav-neon)" />
                 </svg>
             </a>
-
             <nav class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-widest text-slate-400">
                 <a href="#servicos" class="hover:text-white transition-colors">Pastas de Serviços</a>
                 <a href="#pauerhelps" class="hover:text-red-400 transition-colors flex items-center gap-2 text-red-400 font-bold">
@@ -83,7 +74,6 @@
                 </a>
                 <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
             </nav>
-
             <a href="#contacto" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs tracking-wider uppercase transition-all shadow-lg shadow-amber-500/15">
                 Pedir Orçamento
             </a>
@@ -91,24 +81,22 @@
     </header>
 
     <main class="pt-28">
-        <!-- Hero Section com CLI -->
+        <!-- Hero Section -->
         <section class="max-w-6xl mx-auto px-6 py-16 relative z-10">
             <div class="space-y-8 text-center max-w-4xl mx-auto">
                 <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-amber-500/20 bg-amber-500/10 text-amber-300 text-xs font-mono">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                     STUDIO ARCHITECTURE & EMERGENCY CLI
                 </div>
-
                 <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.08]">
                     Projetos da Base de Dados & <br/>
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-red-500">Engenharia de Resgate SOS</span>
                 </h1>
-
                 <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                    Sou o <strong>Francisco Safara Dias</strong>. Explora as pastas de serviços abaixo com os projetos carregados em tempo real diretamente da base de dados PostgreSQL.
+                    Sou o <strong>Francisco Safara Dias</strong>. Explora as pastas de serviços abaixo com os projetos carregados em tempo real. Cada categoria possui pastas interativas de projetos.
                 </p>
 
-                <!-- TERMINAL CLI INTERATIVO -->
+                <!-- TERMINAL CLI -->
                 <div class="w-full rounded-3xl overflow-hidden border border-slate-800 bg-slate-950/95 backdrop-blur-2xl shadow-2xl text-left font-mono text-xs my-8 relative">
                     <div class="bg-slate-900 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
                         <div class="flex items-center space-x-2">
@@ -119,12 +107,10 @@
                         </div>
                         <span class="text-[11px] text-amber-400 font-mono">STATUS: ONLINE</span>
                     </div>
-
                     <div id="terminal-body" class="p-6 h-64 overflow-y-auto space-y-2 text-slate-300">
                         <div class="text-slate-500">[PAUER-DEV STUDIO ARCHITECTURE LOADED]</div>
                         <div class="text-slate-400">Escreve <span class="text-amber-400 font-bold">'pauer --help'</span> para executar comandos.</div>
                     </div>
-
                     <div class="p-4 border-t border-slate-800 bg-slate-950 flex items-center">
                         <span class="text-amber-400 font-bold mr-2">pauer@studio:~$</span>
                         <input id="terminal-input" type="text" class="flex-1 bg-transparent border-none outline-none text-amber-300 font-mono text-xs" placeholder="Escreve 'pauer --help'..." />
@@ -133,21 +119,21 @@
             </div>
         </section>
 
-        <!-- SECÇÃO DE PASTAS INTERATIVAS DINÂMICAS (BASE DE DADOS) -->
+        <!-- SECÇÃO DE PASTAS DE SERVIÇOS & FILE EXPLORER DE PROJETOS -->
         <section id="servicos" class="max-w-6xl mx-auto px-6 py-16 relative z-10">
             <div class="mb-8">
-                <h2 class="text-xs font-mono font-bold text-amber-400 tracking-widest uppercase mb-2">// Pastas de Serviços & Base de Dados PostgreSQL</h2>
-                <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Arquivos de Projetos Interativos</h3>
+                <h2 class="text-xs font-mono font-bold text-amber-400 tracking-widest uppercase mb-2">// Pastas de Serviços & File Explorer</h2>
+                <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Explorador de Projetos por Categoria</h3>
             </div>
 
-            <!-- Abas de Pastas Dinâmicas estilo OS -->
+            <!-- Abas Principais de Categoria (ex: Discord Bots, Software Tools...) -->
             <div id="pastas-tabs" class="flex flex-wrap items-end gap-2 border-b border-slate-800">
                 <!-- Gerado dinamicamente via JS -->
             </div>
 
-            <!-- Corpo da Pasta Aberta (Carregado via API) -->
-            <div id="pastas-container" class="p-8 rounded-b-3xl studio-card-glow border border-slate-800 bg-slate-950/90 min-h-[420px]">
-                <div class="text-center py-16 text-slate-500 font-mono text-xs">A carregar projetos da base de dados...</div>
+            <!-- Contentor Principal da Categoria com o File Explorer de Projetos -->
+            <div id="pastas-container" class="p-6 sm:p-8 rounded-b-3xl studio-card-glow border border-slate-800 bg-slate-950/90 min-h-[480px]">
+                <div class="text-center py-16 text-slate-500 font-mono text-xs">A carregar projetos e file explorer...</div>
             </div>
         </section>
 
@@ -159,9 +145,9 @@
                     <h4 class="text-xl font-bold text-white">🚨 PauerHelps — Serviço de Resgate Técnico Urgente (SOS)</h4>
                 </div>
                 <p class="text-xs text-slate-300 leading-relaxed max-w-3xl">
-                    Falha crítica no teu bot, servidor em baixo ou bug bloqueante em produção? O protocolo PauerHelps garante resposta técnica imediata e intervenção direta.
+                    Falha crítica no teu bot, servidor em baixo ou bug bloqueante em produção? O protocolo PauerHelps garante resposta técnica imediata.
                 </p>
-                <a href="#contacto" onclick="selectEmergency('Bug Crítico SOS')" class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-opacity">
+                <a href="#contacto" onclick="selectEmergency('Bug Crítico SOS')" class="inline-block px-6 py-3 rounded-xl bg-gradient-to-r from-red-600 to-orange-500 text-white font-bold text-xs uppercase tracking-wider hover:opacity-90 transition-all">
                     Ativar Socorro Técnico Agora
                 </a>
             </div>
@@ -172,7 +158,6 @@
             <div class="studio-card-glow p-8 sm:p-12 border border-slate-800">
                 <h3 class="text-2xl font-bold text-white mb-2">Pedir Ajuda ou Orçamento</h3>
                 <p class="text-slate-400 text-xs mb-8">Descreve o teu projeto ou o problema que precisas de ver resolvido.</p>
-
                 <form id="form-contacto" class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <input type="text" id="form-nome" placeholder="O teu nome" required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-600 text-xs focus:outline-none focus:border-amber-500"/>
@@ -186,7 +171,6 @@
                         <option value="rescue">🚨 PauerHelps (SOS Urgente / Debug)</option>
                     </select>
                     <textarea id="form-msg" rows="4" placeholder="Detalhes do pedido..." required class="w-full px-4 py-3.5 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder-slate-600 text-xs focus:outline-none focus:border-amber-500"></textarea>
-
                     <button type="submit" class="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition-all shadow-lg shadow-amber-500/15">
                         Enviar Mensagem // PauerDev.help
                     </button>
@@ -199,7 +183,6 @@
         © 2026 PauerDev.help — Francisco Safara Dias. Todos os direitos reservados.
     </footer>
 
-    <!-- Ficheiro de Scripts Personalizado -->
     <script src="script.js"></script>
 </body>
 </html>
