@@ -47,6 +47,25 @@ function selecionarProjetoCategoria(catKey, index) {
         .then(projetos => renderizarSecçõesIndependentes(projetos));
 }
 
+// Função auxiliar universal para normalizar imagens independentemente de como vêm da BD
+function obterListaImagens(proj) {
+    let imgs = [];
+    if (Array.isArray(proj.imagens)) {
+        imgs = proj.imagens;
+    } else if (typeof proj.imagens === 'string' && proj.imagens.trim() !== '') {
+        try { imgs = JSON.parse(proj.imagens); } catch(e) { imgs = proj.imagens.split(',').map(s => s.trim()); }
+    }
+    
+    // Suporte a formatos alternativos comuns (print1, print2, etc.)
+    ['print1', 'print2', 'print3', 'print4', 'imagem1', 'imagem2', 'imagem3'].forEach(campo => {
+        if (proj[campo] && typeof proj[campo] === 'string' && !imgs.includes(proj[campo])) {
+            imgs.push(proj[campo]);
+        }
+    });
+
+    return imgs.filter(url => url && typeof url === 'string' && url.trim() !== '');
+}
+
 function renderizarSecçõesIndependentes(projetos) {
     const container = document.getElementById('projetos-container');
     if (!container) return;
@@ -162,31 +181,61 @@ function renderizarSecçõesIndependentes(projetos) {
             let tagsHtml = '';
             if (projAtual.tags && Array.isArray(projAtual.tags)) {
                 tagsHtml = projAtual.tags.map(t => `<span class="px-3 py-1 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/20 text-xs font-mono shadow-sm">${t}</span>`).join('');
+            } else if (typeof projAtual.tags === 'string') {
+                try {
+                    const parsedTags = JSON.parse(projAtual.tags);
+                    if (Array.isArray(parsedTags)) {
+                        tagsHtml = parsedTags.map(t => `<span class="px-3 py-1 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/20 text-xs font-mono shadow-sm">${t}</span>`).join('');
+                    }
+                } catch(e) {
+                    tagsHtml = projAtual.tags.split(',').map(t => `<span class="px-3 py-1 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/20 text-xs font-mono shadow-sm">${t.trim()}</span>`).join('');
+                }
             }
 
             let printsHtml = '';
-            if (projAtual.imagens && Array.isArray(projAtual.imagens) && projAtual.imagens.length > 0) {
+            const listaImagens = obterListaImagens(projAtual);
+            
+            if (listaImagens.length > 0) {
+                const totalImagens = listaImagens.length;
+                // Exibe no máximo 2 imagens visíveis diretamente na grelha
+                const imagensVisiveis = listaImagens.slice(0, 2);
+                const imagensOcultasCount = totalImagens - 2;
+
+                let gridItemsHtml = imagensVisiveis.map((imgUrl, imgIdx) => `
+                    <div onclick="abrirModalImagem('${imgUrl}')" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
+                        <img src="${imgUrl}" alt="Print ${imgIdx+1}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-mono gap-1">
+                            <span>🔍</span> <span>Ver Imagem</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Se houver mais do que 2 imagens, a 3ª caixa vira o indicador de "+X"
+                if (imagensOcultasCount > 0) {
+                    const terceiraImagemUrl = listaImagens[2]; // Clica para abrir a próxima
+                    gridItemsHtml += `
+                    <div onclick="abrirModalImagem('${terceiraImagemUrl}')" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
+                        <img src="${terceiraImagemUrl}" alt="Mais prints" class="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-300">
+                        <div class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-amber-400 font-mono font-bold text-base gap-1 group-hover:bg-black/60 transition-colors">
+                            <span>+${imagensOcultasCount}</span>
+                            <span class="text-[10px] text-slate-300 font-normal">Ver todas</span>
+                        </div>
+                    </div>`;
+                }
+
                 printsHtml = `
                 <div class="space-y-3 pt-4 border-t border-slate-800/80 mt-6">
                     <span class="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                        <span>📷</span> Capturas de Ecrã (Clica para ampliar)
+                        <span>📷</span> Capturas de Ecrã (${totalImagens} disponíveis — Clica para ampliar)
                     </span>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        ${projAtual.imagens.map((imgUrl, imgIdx) => `
-                            <div onclick="abrirModalImagem('${imgUrl}')" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
-                                <img src="${imgUrl}" alt="Print ${imgIdx+1}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-mono gap-1">
-                                    <span>🔍</span> <span>Ver Imagem</span>
-                                </div>
-                            </div>
-                        `).join('')}
+                        ${gridItemsHtml}
                     </div>
                 </div>`;
             }
 
             const nomePastaProj = projAtual.nome ? projAtual.nome.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'projeto';
 
-            // Renderização do logótipo a partir da base de dados (suporta caminhos relativos como /assets/img/... ou URLs)
             const logoContent = projAtual.logo 
                 ? `<img src="${projAtual.logo}" alt="Logo" class="w-full h-full object-contain drop-shadow-2xl">` 
                 : `<span class="text-amber-400">⚡</span>`;
@@ -208,7 +257,7 @@ function renderizarSecçõesIndependentes(projetos) {
                         </div>
                     </div>
 
-                    <!-- CONTEÚDO E DETALHES (Ajustado para o espaço restante) -->
+                    <!-- CONTEÚDO E DETALHES -->
                     <div class="lg:col-span-7 space-y-6">
                         <div class="flex flex-wrap items-center justify-between gap-4">
                             <h3 class="text-2xl sm:text-4xl font-black text-white tracking-tight">${projAtual.nome}</h3>
