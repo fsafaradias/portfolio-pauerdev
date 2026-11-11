@@ -318,7 +318,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center justify-center">
                     <!-- Botão Fechar -->
                     <button onclick="fecharModalImagem()" class="absolute -top-12 right-0 text-slate-300 hover:text-white font-mono text-xs px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 transition-colors shadow-lg z-20">
-                        ✕ Fechar [ESC]
+                        ✕ Fechar
                     </button>
                     
                     <!-- Botões de Navegação Lateral -->

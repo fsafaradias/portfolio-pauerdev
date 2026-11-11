@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StaffFlow — Bot de Gestão & Moderação para Discord</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#0b0f19',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .studio-card-glow {
+            position: relative;
+            overflow: hidden;
+        }
+        .studio-card-glow::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(251, 133, 0, 0.08), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .studio-card-glow:hover::before {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen relative selection:bg-amber-500 selection:text-black">
+
+    <!-- Camada de Fundo: Grelha Tecnológica -->
+    <div id="tech-grid" class="fixed inset-0 pointer-events-none z-0 opacity-15"></div>
+
+    <!-- HEADER SUPERIOR -->
+    <header class="sticky top-0 z-40 w-full border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-md">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-3 group">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-red-500 flex items-center justify-center font-black text-black text-lg shadow-lg group-hover:scale-105 transition-transform">
+                    P
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-bold text-white tracking-tight text-sm leading-tight group-hover:text-amber-400 transition-colors">PauerDev.help</span>
+                    <span class="text-[10px] font-mono text-slate-400">ECOSYSTEM & LABS</span>
+                </div>
+            </a>
+
+            <nav class="hidden md:flex items-center gap-6 font-mono text-xs text-slate-400">
+                <a href="/#sec-discord-bots" class="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                    <span>🤖</span> <span>Bots Discord</span>
+                </a>
+                <a href="/#sec-software-tools" class="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                    <span>🛠️</span> <span>Automação</span>
+                </a>
+                <a href="/#sec-game-development" class="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                    <span>🎮</span> <span>Games</span>
+                </a>
+                <a href="/#sec-web-development" class="hover:text-amber-400 transition-colors flex items-center gap-1.5">
+                    <span>🌐</span> <span>Web & SaaS</span>
+                </a>
+                <a href="/#pauerhelps" class="text-red-400 hover:text-red-300 transition-colors flex items-center gap-1.5 font-bold">
+                    <span>🚨</span> <span>SOS PauerHelps</span>
+                </a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <!-- Botão Adicionar ao Discord (Header) -->
+                <a href="https://discord.com/oauth2/authorize?client_id=TEU_CLIENT_ID&scope=bot&permissions=8" target="_blank" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 border border-indigo-400/40 text-xs font-mono text-white font-semibold transition-all flex items-center gap-2 shadow-lg hover:shadow-indigo-500/20">
+                    <span>👾 Adicionar ao Discord</span> ↗
+                </a>
+                <a href="https://github.com/fsafaradias/StaffFlow-bot" target="_blank" class="px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-xs font-mono text-amber-400 transition-all flex items-center gap-2 shadow-md">
+                    <span>GitHub</span> ↗
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="relative z-10 max-w-6xl mx-auto px-6 py-12 space-y-12">
+
+        <!-- Caminho da Diretoria & Título da Página -->
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800/60 pb-6">
+            <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-mono mb-3">
+                    <span>📁</span> <span>dir: /discord-bots/staffflow-bot/</span> <span class="opacity-60">(v2.4-stable)</span>
+                </div>
+                <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight flex items-center gap-3">
+                    🛡️ StaffFlow Bot
+                </h1>
+                <p class="text-slate-400 text-sm mt-2 max-w-2xl">
+                    Sistema avançado para gestão de equipas de suporte, controlo de turnos, automação de tickets e monitorização de disponibilidade no Discord.
+                </p>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- BOTÃO PRINCIPAL DE ADICIONAR BOT AO DISCORD -->
+                <a href="https://discord.com/oauth2/authorize?client_id=TEU_CLIENT_ID&scope=bot&permissions=8" target="_blank" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 border border-indigo-400/40 text-sm font-mono text-white font-bold transition-all flex items-center gap-2 shadow-xl hover:shadow-indigo-500/25 group">
+                    <span>👾 Adicionar Bot ao Discord</span>
+                    <span class="group-hover:translate-x-1 transition-transform">↗</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- CARTÃO PRINCIPAL (Destaque do Projeto + Capa Grande + Prints) -->
+        <section class="studio-card-glow p-6 sm:p-10 border border-slate-800/80 bg-slate-950/95 rounded-3xl shadow-2xl relative overflow-hidden group">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- Capa / Logótipo Grande -->
+                <div class="lg:col-span-5 flex flex-col items-center justify-center p-4 text-center relative overflow-hidden">
+                    <div class="w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80 flex items-center justify-center z-10 transition-transform duration-500 group-hover:scale-105 bg-slate-900/60 rounded-3xl border border-slate-800/80 shadow-2xl relative">
+                        <span class="text-8xl drop-shadow-2xl">🛡️</span>
+                        <div class="absolute bottom-4 left-4 right-4 text-center font-mono text-[11px] text-amber-400/80 bg-slate-950/80 py-1 rounded-xl border border-slate-800">
+                            StaffFlow Manager v2.4
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Detalhes & Descrição Alargada -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight">Gestão Inteligente de Moderação</h2>
+                        <a href="https://github.com/fsafaradias/StaffFlow-bot" target="_blank" class="px-4.5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500/20 text-xs font-mono text-amber-400 font-semibold transition-all shadow-md flex items-center gap-2">
+                            <span>Ver Repositório</span> <span>↗</span>
+                        </a>
+                    </div>
+
+                    <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-sans">
+                        O **StaffFlow** foi construído para otimizar o acompanhamento e organização de equipas em servidores do Discord. Permite monitorizar a disponibilidade em tempo real, gerar abas dinâmicas com saudações automáticas, consultar menus de ajuda interativos e configurar fluxos de tickets altamente personalizáveis com controlo granular de permissões por cargos.
+                    </p>
+
+                    <!-- Capturas Gerais de Ecrã com Galeria Modal + Contador (+X) -->
+                    <div class="space-y-3 pt-4 border-t border-slate-800/80 mt-6">
+                        <span class="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                            <span>📷</span> Visão Geral do Sistema (Clica para ampliar)
+                        </span>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="prints-container">
+                            <!-- Inserido dinamicamente via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Tags Tecnológicas -->
+                    <div class="flex flex-wrap gap-2 pt-2">
+                        <span class="px-3 py-1 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/20 text-xs font-mono shadow-sm">Node.js</span>
+                        <span class="px-3 py-1 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/20 text-xs font-mono shadow-sm">Discord.js v14</span>
+                        <span class="px-3 py-1 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/20 text-xs font-mono shadow-sm">SQLite / MongoDB</span>
+                        <span class="px-3 py-1 rounded-full bg-slate-900/90 text-amber-300 border border-amber-500/20 text-xs font-mono shadow-sm">Docker</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECÇÃO: ESTATÍSTICAS E MÉTRICAS -->
+        <section class="space-y-6">
+            <div class="flex items-center gap-3">
+                <span class="text-xl">📊</span>
+                <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Métricas & Desempenho em Tempo Real</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="studio-card-glow p-5 rounded-2xl bg-slate-950/90 border border-slate-800/80 flex flex-col justify-between">
+                    <span class="text-xs font-mono text-slate-400 flex items-center gap-2">⚡ Tempo de Resposta</span>
+                    <div class="mt-3">
+                        <span class="text-3xl font-extrabold text-amber-400 font-mono">&lt; 45ms</span>
+                        <p class="text-[11px] text-slate-500 mt-1">Latência ultra-baixa via WebSocket</p>
+                    </div>
+                </div>
+
+                <div class="studio-card-glow p-5 rounded-2xl bg-slate-950/90 border border-slate-800/80 flex flex-col justify-between">
+                    <span class="text-xs font-mono text-slate-400 flex items-center gap-2">🎟️ Tickets Processados</span>
+                    <div class="mt-3">
+                        <span class="text-3xl font-extrabold text-white font-mono">15,000+</span>
+                        <p class="text-[11px] text-slate-500 mt-1">Atendimentos concluídos com sucesso</p>
+                    </div>
+                </div>
+
+                <div class="studio-card-glow p-5 rounded-2xl bg-slate-950/90 border border-slate-800/80 flex flex-col justify-between">
+                    <span class="text-xs font-mono text-slate-400 flex items-center gap-2">🕒 Uptime Garantido</span>
+                    <div class="mt-3">
+                        <span class="text-3xl font-extrabold text-emerald-400 font-mono">99.98%</span>
+                        <p class="text-[11px] text-slate-500 mt-1">Arquitetura resiliente em Docker</p>
+                    </div>
+                </div>
+
+                <div class="studio-card-glow p-5 rounded-2xl bg-slate-950/90 border border-slate-800/80 flex flex-col justify-between">
+                    <span class="text-xs font-mono text-slate-400 flex items-center gap-2">👥 Membros de Staff</span>
+                    <div class="mt-3">
+                        <span class="text-3xl font-extrabold text-amber-400 font-mono">500+</span>
+                        <p class="text-[11px] text-slate-500 mt-1">Moderadores ativos sob controlo</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECÇÃO: DOCUMENTAÇÃO DETALHADA DOS COMANDOS (COM PRINT DE OUTPUT INDIVIDUAL) -->
+        <section class="space-y-8">
+            <div class="flex items-center justify-between border-b border-slate-800/60 pb-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">⚙️</span>
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight">Comandos Slash (/commands)</h2>
+                        <p class="text-slate-400 text-xs">Especificações detalhadas dos parâmetros e demonstração visual de cada comando.</p>
+                    </div>
+                </div>
+                <span class="text-xs font-mono text-amber-400/80 bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20 hidden sm:inline-block">StaffFlow CLI Manual</span>
+            </div>
+
+            <div class="space-y-8">
+
+                <!-- COMANDO 1: /ajuda -->
+                <div class="studio-card-glow p-6 sm:p-8 rounded-3xl bg-slate-950/90 border border-slate-800/80 space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-900 pb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 font-mono text-sm font-extrabold">/ajuda</span>
+                            <span class="text-xs text-slate-400 font-mono">Sintaxe: <code>/ajuda</code></span>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400 px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800">GERAL / SUPORTE</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-7 space-y-4">
+                            <p class="text-sm text-slate-300 leading-relaxed">
+                                Envia uma mensagem de ajuda completa contendo a listagem atualizada de todos os comandos do **StaffFlow**. Ideal para utilizadores ou administradores consultarem rapidamente as funcionalidades disponíveis no servidor.
+                            </p>
+                            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800/80 font-mono text-xs space-y-2">
+                                <div class="text-amber-400 font-bold">// Destaques do Output:</div>
+                                <div class="text-slate-300">• Exibe descrição, permissões necessárias e sintaxe exata.</div>
+                                <div class="text-slate-300">• Resposta formatada em Embed interativo.</div>
+                            </div>
+                        </div>
+
+                        <!-- Print / Output de /ajuda -->
+                        <div class="lg:col-span-5">
+                            <div onclick="abrirModalUnico('/assets/img/staffflowprint1.png')" class="group relative rounded-2xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-xl">
+                                <img src="/assets/img/staffflowprint1.png" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x450/0f172a/fb8500?text=Print+Output:+/ajuda';" alt="Print /ajuda" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-mono gap-1.5">
+                                    <span>🔍</span> <span>Ampliar Print (/ajuda)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMANDO 2: /criar_abas -->
+                <div class="studio-card-glow p-6 sm:p-8 rounded-3xl bg-slate-950/90 border border-slate-800/80 space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-900 pb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 font-mono text-sm font-extrabold">/criar_abas</span>
+                            <span class="text-xs text-slate-400 font-mono">Sintaxe: <code>/criar_abas texto: titulo: categoria_id: prefixo:</code></span>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400 px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800">AUTOMAÇÃO / SALAS</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-7 space-y-4">
+                            <p class="text-sm text-slate-300 leading-relaxed">
+                                Cria painéis interativos com botões para abertura de abas pessoais. Além disso, permite **configurar uma mensagem automática personalizada** que é enviada ao utilizador assim que ele clica no botão para abrir a sua aba pessoal.
+                            </p>
+                            
+                            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800/80 font-mono text-xs space-y-2">
+                                <div class="text-amber-400 font-bold">// Parâmetros Obrigatórios:</div>
+                                <div>• <span class="text-amber-300">texto:</span> Corpo da mensagem explicativa no painel.</div>
+                                <div>• <span class="text-amber-300">titulo:</span> Título principal do Embed.</div>
+                                <div>• <span class="text-amber-300">categoria_id:</span> ID da categoria Discord onde o canal da aba será criado.</div>
+                                <div>• <span class="text-amber-300">prefixo:</span> Prefixo aplicado ao nome do canal criado (ex: <code>aba-</code>).</div>
+                            </div>
+                        </div>
+
+                        <!-- Print / Output de /criar_abas -->
+                        <div class="lg:col-span-5">
+                            <div onclick="abrirModalUnico('/assets/img/staffflowp2.png')" class="group relative rounded-2xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-xl">
+                                <img src="/assets/img/staffflowp2.png" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x450/0f172a/fb8500?text=Print+Output:+/criar_abas';" alt="Print /criar_abas" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-mono gap-1.5">
+                                    <span>🔍</span> <span>Ampliar Print (/criar_abas)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMANDO 3: /disponibilidade -->
+                <div class="studio-card-glow p-6 sm:p-8 rounded-3xl bg-slate-950/90 border border-slate-800/80 space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-900 pb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 font-mono text-sm font-extrabold">/disponibilidade</span>
+                            <span class="text-xs text-slate-400 font-mono">Sintaxe: <code>/disponibilidade canal_id:</code></span>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400 px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800">GESTÃO DE STAFF</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-7 space-y-4">
+                            <p class="text-sm text-slate-300 leading-relaxed">
+                                Configura um canal específico para enviar mensagens de verificação de disponibilidade. Os utilizadores podem **votar SIM ou NÃO** através de botões dinâmicos, permitindo calcular em tempo real com quantas pessoas se pode contar para um determinado horário ou turno.
+                            </p>
+                            
+                            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800/80 font-mono text-xs space-y-2">
+                                <div class="text-amber-400 font-bold">// Parâmetros & Funcionamento:</div>
+                                <div>• <span class="text-amber-300">canal_id:</span> ID do canal onde a sondagem de presença será publicada.</div>
+                                <div>• Contabilização automática e atualização em tempo real dos votos registrados.</div>
+                            </div>
+                        </div>
+
+                        <!-- Print / Output de /disponibilidade -->
+                        <div class="lg:col-span-5">
+                            <div onclick="abrirModalUnico('/assets/img/cmd-disponibilidade.png')" class="group relative rounded-2xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-xl">
+                                <img src="/assets/img/cmd-disponibilidade.png" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x450/0f172a/fb8500?text=Print+Output:+/disponibilidade';" alt="Print /disponibilidade" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-mono gap-1.5">
+                                    <span>🔍</span> <span>Ampliar Print (/disponibilidade)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- COMANDO 4: /ticket_tool -->
+                <div class="studio-card-glow p-6 sm:p-8 rounded-3xl bg-slate-950/90 border border-slate-800/80 space-y-6">
+                    <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-900 pb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 font-mono text-sm font-extrabold">/ticket_tool</span>
+                            <span class="text-xs text-slate-400 font-mono">Sintaxe: <code>/ticket_tool titulo: descricao: categoria_id: quantidade:</code></span>
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-400 px-2.5 py-1 rounded-md bg-slate-900 border border-slate-800">SISTEMA DE TICKETS</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                        <div class="lg:col-span-7 space-y-4">
+                            <p class="text-sm text-slate-300 leading-relaxed">
+                                Configura o painel principal do **Ticket Tool**. Após indicar as informações iniciais, o sistema permite configurar individualmente cada um dos canais criados e selecionar exatamente **quais os cargos que terão acesso ao ticket**. O canal de ticket gerado fica batizado com o prefixo do botão e o nome do utilizador (ex: <code>suporte-joao</code>).
+                            </p>
+                            
+                            <div class="bg-slate-900/80 p-4 rounded-2xl border border-slate-800/80 font-mono text-xs space-y-2">
+                                <div class="text-amber-400 font-bold">// Parâmetros Obrigatórios:</div>
+                                <div>• <span class="text-amber-300">titulo:</span> Título no topo do Embed de abertura.</div>
+                                <div>• <span class="text-amber-300">descricao:</span> Instruções de atendimento para os utilizadores.</div>
+                                <div>• <span class="text-amber-300">categoria_id:</span> Categoria do Discord onde os tickets abertos serão alocados.</div>
+                                <div>• <span class="text-amber-300">quantidade:</span> Número máximo de botões/categorias de suporte no painel.</div>
+                            </div>
+                        </div>
+
+                        <!-- Print / Output de /ticket_tool -->
+                        <div class="lg:col-span-5">
+                            <div onclick="abrirModalUnico('/assets/img/staffflowp4.png')" class="group relative rounded-2xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-xl">
+                                <img src="/assets/img/staffflowp4.png" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x450/0f172a/fb8500?text=Print+Output:+/ticket_tool';" alt="Print /ticket_tool" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-mono gap-1.5">
+                                    <span>🔍</span> <span>Ampliar Print (/ticket_tool)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-20 border-t border-slate-800/80 bg-slate-950/90 py-8 relative z-10 text-xs font-mono text-slate-500">
+        <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+                <span>© 2026 PauerDev.help — Desenvolvido por </span>
+                <a href="https://github.com/fsafaradias" target="_blank" class="text-amber-400 hover:underline">fsafaradias</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="/#sec-discord-bots" class="hover:text-slate-300 transition-colors">Discord Bots</a>
+                <a href="/#pauerhelps" class="text-red-400 hover:text-red-300 transition-colors">SOS PauerHelps</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL DE VISUALIZAÇÃO DE IMAGENS COM GALERIA -->
+    <div id="modal-imagem-container" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center justify-center">
+            <button onclick="fecharModalImagem()" class="absolute -top-12 right-0 text-slate-300 hover:text-white font-mono text-xs px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 transition-colors shadow-lg z-20">
+                ✕ Fechar
+            </button>
+            
+            <button id="btn-modal-prev" onclick="mudarImagemModal(-1)" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-slate-900/80 hover:bg-slate-800 text-amber-400 p-3 sm:p-4 rounded-full border border-slate-700 transition-colors shadow-xl z-20 hidden items-center justify-center text-xl font-bold">
+                ‹
+            </button>
+            <button id="btn-modal-next" onclick="mudarImagemModal(1)" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-slate-900/80 hover:bg-slate-800 text-amber-400 p-3 sm:p-4 rounded-full border border-slate-700 transition-colors shadow-xl z-20 hidden items-center justify-center text-xl font-bold">
+                ›
+            </button>
+
+            <img id="modal-imagem-src" src="" alt="Zoom Print" class="max-w-full max-h-[80vh] rounded-2xl border border-slate-700 object-contain shadow-2xl">
+            
+            <div id="modal-contador" class="mt-4 text-xs font-mono text-amber-400/90 bg-slate-900/80 px-4 py-1.5 rounded-full border border-slate-800 shadow-md"></div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS DE COMPORTAMENTO -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Efeito Grelha Tecnológica
+            const gridLayer = document.getElementById('tech-grid');
+            if (gridLayer) {
+                gridLayer.style.backgroundImage = 'radial-gradient(rgba(251, 133, 0, 0.4) 1px, transparent 1px), radial-gradient(rgba(255, 77, 77, 0.2) 1px, transparent 1px)';
+                gridLayer.style.backgroundSize = '32px 32px';
+                gridLayer.style.backgroundPosition = '0 0, 16px 16px';
+            }
+
+            // Spotlight nos cartões
+            document.addEventListener('mousemove', e => {
+                const cards = document.querySelectorAll('.studio-card-glow');
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+
+            // Capturas de ecrã para a visão geral
+            renderizarPrints([
+                '/assets/img/cmd-ajuda.png',
+                '/assets/img/cmd-criar-abas.png',
+                '/assets/img/cmd-disponibilidade.png',
+                '/assets/img/cmd-ticket-tool.png'
+            ]);
+        });
+
+        let modalImagensAtuais = [];
+        let modalIndiceAtual = 0;
+
+        function renderizarPrints(listaImagens) {
+            const container = document.getElementById('prints-container');
+            if (!container) return;
+
+            if (!listaImagens || listaImagens.length === 0) {
+                container.innerHTML = `<div class="col-span-3 text-xs font-mono text-slate-500 py-4 text-center">Nenhuma captura de ecrã adicionada de momento.</div>`;
+                return;
+            }
+
+            const totalImagens = listaImagens.length;
+            const imagensVisiveis = listaImagens.slice(0, 2);
+            const imagensOcultasCount = totalImagens - 2;
+            const b64Imagens = btoa(JSON.stringify(listaImagens));
+
+            let html = imagensVisiveis.map((imgUrl, imgIdx) => `
+                <div onclick="abrirGaleriaBase64('${b64Imagens}', ${imgIdx})" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
+                    <img src="${imgUrl}" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x450/0f172a/fb8500?text=Print+${imgIdx+1}';" alt="Print ${imgIdx+1}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-mono gap-1">
+                        <span>🔍</span> <span>Ver Imagem</span>
+                    </div>
+                </div>
+            `).join('');
+
+            if (imagensOcultasCount > 0) {
+                const terceiraUrl = listaImagens[2];
+                html += `
+                <div onclick="abrirGaleriaBase64('${b64Imagens}', 2)" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
+                    <img src="${terceiraUrl}" onerror="this.onerror=null; this.src='https://via.placeholder.com/800x450/0f172a/fb8500?text=Mais+Prints';" alt="Mais prints" class="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-300">
+                    <div class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-amber-400 font-mono font-bold text-base gap-1 group-hover:bg-black/60 transition-colors">
+                        <span>+${imagensOcultasCount}</span>
+                        <span class="text-[10px] text-slate-300 font-normal">Ver todas</span>
+                    </div>
+                </div>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        function abrirModalUnico(url) {
+            modalImagensAtuais = [url];
+            modalIndiceAtual = 0;
+            atualizarVisualizacaoModal();
+            const modal = document.getElementById('modal-imagem-container');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function abrirGaleriaBase64(b64, indiceInicial = 0) {
+            try {
+                const imagens = JSON.parse(atob(b64));
+                if (Array.isArray(imagens) && imagens.length > 0) {
+                    modalImagensAtuais = imagens;
+                    modalIndiceAtual = indiceInicial;
+                    atualizarVisualizacaoModal();
+                    
+                    const modal = document.getElementById('modal-imagem-container');
+                    if (modal) {
+                        modal.classList.remove('hidden');
+                        modal.classList.add('flex');
+                    }
+                }
+            } catch(err) {
+                console.error('Erro ao abrir galeria:', err);
+            }
+        }
+
+        function mudarImagemModal(direcao) {
+            if (modalImagensAtuais.length <= 1) return;
+            modalIndiceAtual += direcao;
+            if (modalIndiceAtual < 0) modalIndiceAtual = modalImagensAtuais.length - 1;
+            if (modalIndiceAtual >= modalImagensAtuais.length) modalIndiceAtual = 0;
+            atualizarVisualizacaoModal();
+        }
+
+        function atualizarVisualizacaoModal() {
+            const img = document.getElementById('modal-imagem-src');
+            const contador = document.getElementById('modal-contador');
+            const btnPrev = document.getElementById('btn-modal-prev');
+            const btnNext = document.getElementById('btn-modal-next');
+
+            if (img && modalImagensAtuais.length > 0) {
+                img.src = modalImagensAtuais[modalIndiceAtual];
+            }
+
+            if (contador) {
+                if (modalImagensAtuais.length > 1) {
+                    contador.textContent = `Imagem ${modalIndiceAtual + 1} de ${modalImagensAtuais.length}`;
+                    contador.classList.remove('hidden');
+                } else {
+                    contador.classList.add('hidden');
+                }
+            }
+
+            if (btnPrev && btnNext) {
+                if (modalImagensAtuais.length > 1) {
+                    btnPrev.classList.remove('hidden'); btnPrev.classList.add('flex');
+                    btnNext.classList.remove('hidden'); btnNext.classList.add('flex');
+                } else {
+                    btnPrev.classList.add('hidden'); btnPrev.classList.remove('flex');
+                    btnNext.classList.add('hidden'); btnNext.classList.remove('flex');
+                }
+            }
+        }
+
+        function fecharModalImagem() {
+            const modal = document.getElementById('modal-imagem-container');
+            if (modal) {
+                modal.classList.remove('flex');
+                modal.classList.add('hidden');
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('modal-imagem-container');
+            const isOpen = modal && !modal.classList.contains('hidden');
+            if (!isOpen) return;
+
+            if (e.key === 'Escape') fecharModalImagem();
+            else if (e.key === 'ArrowLeft') mudarImagemModal(-1);
+            else if (e.key === 'ArrowRight') mudarImagemModal(1);
+        });
+    </script>
+</body>
+</html>
