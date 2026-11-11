@@ -1,8 +1,24 @@
 const API_URL = '/api';
 
-window.addEventListener('DOMContentLoaded', () => {
-    carregarPedidos();
-    carregarProjetos();
+window.addEventListener('mousemove', e => {
+    document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
+    document.body.style.setProperty('--mouse-y`, `${e.clientY}px`);
+});
+
+// TESTE DE ARRANCAMENTO
+console.log("SCRIPT.JS CARREGADO COM SUCESSO!");
+
+// Carregar projetos da Base de Dados via API ao iniciar a página
+document.addEventListener('DOMContentLoaded', async () => {
+    console.log("DOM CARREGADO - A  Fazer FETCH dos projetos...");
+    try {
+        const response = await fetch('/api/projetos');
+        const projetos = await response.json();
+        console.log("Projetos recebidos:", projetos);
+        renderizarProjetos(projetos);
+    } catch (err) {
+        console.error('Erro ao carregar projetos da base de dados:', err);
+    }
 });
 
 function switchTab(tab) {
