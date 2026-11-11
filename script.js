@@ -1,4 +1,4 @@
-// Efeito de Fundo Animado Automático (Partículas Flutuantes)
+// Efeito de Fundo Animado Automático (Partículas Tecnológicas)
 document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     const numParticles = 20;
@@ -73,52 +73,81 @@ function renderizarProjetos(projetos) {
                 </h2>
                 <p class="text-slate-400 text-sm mt-2 max-w-2xl">${config.desc}</p>
             </div>
-            <div class="space-y-6">
+
+            <!-- SIMULAÇÃO DE FILE EXPLORER POR CATEGORIA -->
+            <div class="mb-6 rounded-xl border border-slate-800 bg-slate-900/60 p-3 font-mono text-xs text-slate-400 flex items-center gap-2 overflow-x-auto shadow-inner">
+                <span class="text-amber-400">root@pauerdev:~/</span>
+                <span class="text-slate-600">/</span>
+                <span class="text-slate-300">${catKey}</span>
+                <span class="text-slate-600">/ ( ${projsCat.length} projetos indexados )</span>
+            </div>
+
+            <div class="space-y-8">
         `;
 
-        projsCat.forEach(proj => {
+        projsCat.forEach((proj, pIdx) => {
             let tagsHtml = '';
             if (proj.tags && Array.isArray(proj.tags)) {
-                tagsHtml = proj.tags.map(t => `<span class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 border border-slate-800">${t}</span>`).join('');
+                tagsHtml = proj.tags.map(t => `<span class="px-3 py-1 rounded-full bg-slate-900/80 text-amber-300 border border-amber-500/20 text-xs font-mono shadow-sm">${t}</span>`).join('');
             }
 
             let printsHtml = '';
             if (proj.imagens && Array.isArray(proj.imagens) && proj.imagens.length > 0) {
                 printsHtml = `
-                <div class="space-y-2 pt-2">
-                    <span class="text-xs font-mono text-slate-400 uppercase">// Capturas de Ecrã</span>
+                <div class="space-y-2 pt-3 border-t border-slate-800/80">
+                    <span class="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <span>📷</span> Capturas de Ecrã (Clica para ampliar)
+                    </span>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         ${proj.imagens.map((imgUrl, idx) => `
-                            <div class="rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center text-xs font-mono text-slate-500 overflow-hidden">
-                                <img src="${imgUrl}" alt="Print ${idx+1}" class="w-full h-full object-cover">
+                            <div onclick="abrirModalImagem('${imgUrl}')" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
+                                <img src="${imgUrl}" alt="Print ${idx+1}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-mono">
+                                    🔍 Ver Imagem
+                                </div>
                             </div>
                         `).join('')}
                     </div>
                 </div>`;
             }
 
+            // Estrutura de pasta/file explorer por projeto
+            const nomePasta = proj.nome ? proj.nome.toLowerCase().replace(/[^a-z0-9]/g, '-') : `projeto-${pIdx}`;
+
             htmlFinal += `
-            <div class="studio-card-glow p-8 border border-slate-800 bg-slate-950/90 space-y-8">
+            <div class="studio-card-glow p-6 sm:p-8 border border-slate-800/80 bg-slate-950/95 rounded-2xl shadow-2xl relative overflow-hidden group">
+                <!-- Barra superior simulando File Explorer do projeto -->
+                <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-900 text-xs font-mono text-slate-500">
+                    <div class="flex items-center gap-2">
+                        <span class="text-amber-500">📂</span>
+                        <span class="text-slate-300 font-semibold">dir: /${catKey}/${nomePasta}/</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400">ID: #${proj.id || pIdx + 1}</span>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                    <div class="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-900/50 border border-slate-800 text-center relative overflow-hidden group">
-                        <div class="w-28 h-28 rounded-2xl bg-slate-900 border-2 border-slate-700 flex items-center justify-center text-5xl shadow-2xl mb-4 z-10 overflow-hidden">
-                            ${proj.logo ? `<img src="${proj.logo}" alt="Logo" class="w-full h-full object-cover">` : '⚡'}
+                    <!-- LOGO COM DESTAQUE MÁXIMO -->
+                    <div class="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-slate-900 via-slate-900/80 to-slate-950 border border-slate-800/80 text-center relative overflow-hidden group/logo shadow-inner">
+                        <div class="absolute inset-0 bg-amber-500/5 opacity-0 group-hover/logo:opacity-100 transition-opacity pointer-events-none"></div>
+                        <div class="w-32 h-32 rounded-2xl bg-slate-950 border-2 border-amber-500/40 flex items-center justify-center text-6xl shadow-2xl mb-4 z-10 overflow-hidden transform group-hover/logo:scale-105 transition-transform duration-300">
+                            ${proj.logo && proj.logo.startsWith('http') ? `<img src="${proj.logo}" alt="Logo" class="w-full h-full object-cover">` : (proj.logo || '⚡')}
                         </div>
-                        <h4 class="text-lg font-bold text-white z-10">${proj.nome}</h4>
-                        <span class="text-xs font-mono text-amber-400 z-10 mt-1">${proj.categoria}</span>
+                        <h4 class="text-xl font-black text-white z-10 tracking-wide">${proj.nome}</h4>
+                        <span class="text-xs font-mono text-amber-400 z-10 mt-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20">${proj.categoria}</span>
                     </div>
 
-                    <div class="lg:col-span-8 space-y-4">
+                    <!-- CONTEÚDO E DETALHES -->
+                    <div class="lg:col-span-8 space-y-5">
                         <div class="flex flex-wrap items-center justify-between gap-4">
-                            <h3 class="text-2xl font-extrabold text-white">${proj.nome}</h3>
-                            ${proj.link ? `<a href="${proj.link}" target="_blank" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-xs font-mono text-amber-400 transition-all">Ver Repositório / Demo ↗</a>` : ''}
+                            <h3 class="text-2xl sm:text-3xl font-black text-white tracking-tight">${proj.nome}</h3>
+                            ${proj.link ? `<a href="${proj.link}" target="_blank" class="px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500/20 text-xs font-mono text-amber-400 font-semibold transition-all shadow-md flex items-center gap-1.5"><span>Ver Repositório / Demo</span> <span>↗</span></a>` : ''}
                         </div>
 
-                        <p class="text-sm text-slate-300 leading-relaxed">${proj.descricao}</p>
+                        <p class="text-sm text-slate-300 leading-relaxed font-sans">${proj.descricao}</p>
 
                         ${printsHtml}
 
-                        <div class="flex flex-wrap gap-2 pt-2 text-xs font-mono">
+                        <div class="flex flex-wrap gap-2 pt-2">
                             ${tagsHtml}
                         </div>
                     </div>
@@ -131,6 +160,46 @@ function renderizarProjetos(projetos) {
 
     container.innerHTML = htmlFinal;
 }
+
+// Criar o Modal de Visualização de Imagens Dinamicamente no DOM
+document.addEventListener('DOMContentLoaded', () => {
+    if (!document.getElementById('modal-imagem-container')) {
+        const modalHtml = `
+            <div id="modal-imagem-container" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4">
+                <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
+                    <button onclick="fecharModalImagem()" class="absolute -top-10 right-0 text-slate-400 hover:text-white font-mono text-sm px-3 py-1 rounded bg-slate-800 border border-slate-700 transition-colors">
+                        ✕ Fechar [ESC]
+                    </button>
+                    <img id="modal-imagem-src" src="" alt="Zoom Print" class="max-w-full max-h-[80vh] rounded-xl border border-slate-700 object-contain shadow-2xl">
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+});
+
+function abrirModalImagem(url) {
+    const modal = document.getElementById('modal-imagem-container');
+    const img = document.getElementById('modal-imagem-src');
+    if (modal && img) {
+        img.src = url;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+}
+
+function fecharModalImagem() {
+    const modal = document.getElementById('modal-imagem-container');
+    if (modal) {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+    }
+}
+
+// Fechar com tecla ESC
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fecharModalImagem();
+});
 
 // Lógica de submissão do formulário de contacto ligada à API POST /api/pedidos
 const formContacto = document.getElementById('form-contacto');
