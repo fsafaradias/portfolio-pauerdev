@@ -148,7 +148,7 @@ async function carregarProjetos() {
     }
 }
 
-async function adicionarProjeto(e) {
+async function salvarProjeto(e) {
     e.preventDefault();
 
     const nome = document.getElementById('proj-nome').value;
