@@ -91,7 +91,7 @@ function renderizarProjetos(projetos) {
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                     <div class="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-900/50 border border-slate-800 text-center relative overflow-hidden group">
                         <div class="w-28 h-28 rounded-2xl bg-slate-900 border-2 border-slate-700 flex items-center justify-center text-5xl shadow-2xl mb-4 z-10 overflow-hidden">
-                            ${proj.logo && proj.logo.startsWith('http') ? `<img src="${proj.logo}" alt="Logo" class="w-full h-full object-cover">` : (proj.logo || '⚡')}
+                            ${proj.logo ? `<img src="${proj.logo}" alt="Logo" class="w-full h-full object-cover">` : '⚡'}
                         </div>
                         <h4 class="text-lg font-bold text-white z-10">${proj.nome}</h4>
                         <span class="text-xs font-mono text-amber-400 z-10 mt-1">${proj.categoria}</span>
