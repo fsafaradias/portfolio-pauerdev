@@ -13,19 +13,67 @@
     <!-- BARRA LATERAL (SIDEBAR) -->
     <aside class="w-full md:w-64 bg-slate-950 border-r border-slate-800 p-6 flex flex-col justify-between shrink-0">
         <div class="space-y-8">
-            <!-- Logo Admin -->
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center font-bold text-slate-950 font-mono text-lg">
-                    ⚡
-                </div>
-                <div>
-                    <h1 class="font-extrabold text-white text-base leading-tight">PAUER<span class="text-amber-400 font-mono">Dev</span></h1>
-                    <span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest block">Admin Control</span>
-                </div>
-            </div>
+            <!-- Logo SVG idêntico ao do Index -->
+            <a href="index.html" class="flex items-center gap-3 group block">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 540 120" class="h-10 w-auto transition-transform group-hover:scale-105">
+                    <defs>
+                        <linearGradient id="pauer-nav-orange" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFB703" />
+                            <stop offset="50%" stop-color="#FB8500" />
+                            <stop offset="100%" stop-color="#D97706" />
+                        </linearGradient>
+
+                        <linearGradient id="pauer-nav-red" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FF4D4D" />
+                            <stop offset="100%" stop-color="#DC2626" />
+                        </linearGradient>
+
+                        <linearGradient id="pauer-nav-shield-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="rgba(255, 255, 255, 0.25)" />
+                            <stop offset="50%" stop-color="rgba(251, 133, 0, 0.2)" />
+                            <stop offset="100%" stop-color="rgba(220, 38, 38, 0.3)" />
+                        </linearGradient>
+
+                        <linearGradient id="pauer-nav-shield-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="#0F172A" stop-opacity="0.9" />
+                            <stop offset="100%" stop-color="#070A11" stop-opacity="0.95" />
+                        </linearGradient>
+
+                        <filter id="pauer-nav-neon" x="-20%" y="-20%" width="140%" height="140%">
+                            <feGaussianBlur stdDeviation="3" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <g transform="translate(10, 10)">
+                        <polygon points="50,5 90,27.5 90,72.5 50,95 10,72.5 10,27.5" fill="url(#pauer-nav-shield-bg)" stroke="url(#pauer-nav-shield-stroke)" stroke-width="2" stroke-linejoin="round" />
+                        <circle cx="50" cy="5" r="2.5" fill="#FB8500" />
+                        <circle cx="90" cy="27.5" r="2.5" fill="#FB8500" />
+                        <circle cx="90" cy="72.5" r="2.5" fill="#DC2626" />
+                        <circle cx="50" cy="95" r="2.5" fill="#DC2626" />
+                        <circle cx="10" cy="72.5" r="2.5" fill="#FB8500" />
+                        <circle cx="10" cy="27.5" r="2.5" fill="#FB8500" />
+
+                        <path d="M 28 35 L 18 50 L 28 65" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                        <path d="M 72 35 L 82 50 L 72 65" fill="none" stroke="#475569" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
+                        <path d="M 54 18 L 32 52 L 48 52 L 44 82 L 68 46 L 52 46 Z" fill="url(#pauer-nav-orange)" stroke="#FFB703" stroke-width="1.5" stroke-linejoin="round" filter="url(#pauer-nav-neon)" />
+                        <circle cx="78" cy="22" r="3" fill="#FF4D4D" filter="url(#pauer-nav-neon)" />
+                    </g>
+
+                    <text x="120" y="62" fill="#FFFFFF" font-family="'Plus Jakarta Sans', sans-serif" font-size="40" font-weight="900" letter-spacing="2">PAUER</text>
+                    <text x="285" y="62" font-family="'Fira Code', monospace" font-size="34" font-weight="700" letter-spacing="-1">
+                        <tspan fill="url(#pauer-nav-orange)">Dev</tspan><tspan fill="url(#pauer-nav-red)">.help</tspan>
+                    </text>
+                    <text x="122" y="86" fill="#64748B" font-family="'Fira Code', monospace" font-size="11" font-weight="600" letter-spacing="3">STUDIO ARCHITECTURE // RESCUE CLI</text>
+                </svg>
+            </a>
 
             <!-- Navegação -->
-            <nav class="space-y-2 font-mono text-xs">
+            <nav class="space-y-2 font-mono text-xs pt-4">
                 <button onclick="switchTab('pedidos')" id="nav-pedidos" class="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/30 transition-all">
                     <span class="flex items-center gap-2">📥 Pedidos Orçamento</span>
                     <span id="badge-pedidos-count" class="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 font-bold text-[10px]">0</span>
@@ -83,13 +131,20 @@
         <section id="tab-projetos" class="space-y-8 hidden">
             <div class="border-b border-slate-800 pb-4">
                 <h2 class="text-2xl font-bold text-white">Gerir Projetos do Portfólio</h2>
-                <p class="text-xs text-slate-400 mt-1">Adiciona novos programas, define a categoria, prints adicionais e links.</p>
+                <p class="text-xs text-slate-400 mt-1">Adiciona, edita ou remove programas e gere categorias e prints.</p>
             </div>
 
             <div class="studio-card p-6 md:p-8 rounded-2xl border border-slate-800 bg-slate-950/80 space-y-6">
-                <h3 class="text-lg font-bold text-amber-400 font-mono">// Adicionar Novo Projeto</h3>
+                <div class="flex items-center justify-between">
+                    <h3 id="form-titulo-modo" class="text-lg font-bold text-amber-400 font-mono">// Adicionar Novo Projeto</h3>
+                    <button type="button" id="btn-cancelar-edicao" onclick="resetarFormularioProjeto()" class="hidden px-3 py-1 rounded bg-slate-800 text-slate-300 text-xs font-mono hover:bg-slate-700 transition-all">
+                        Cancelar Edição
+                    </button>
+                </div>
 
-                <form id="form-add-projeto" onsubmit="adicionarProjeto(event)" class="space-y-4">
+                <form id="form-add-projeto" onsubmit="salvarProjeto(event)" class="space-y-4">
+                    <input type="hidden" id="proj-id" value="">
+
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs font-mono text-slate-400 mb-1">Nome do Programa/Bot</label>
@@ -113,7 +168,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-mono text-slate-400 mb-1">URL da Imagem / Logo Principal</label>
-                            <input type="text" id="proj-logo" placeholder="URL da imagem (ex: https://.../logo.png)" required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs focus:border-amber-500 focus:outline-none"/>
+                            <input type="text" id="proj-logo" placeholder="/assets/img/logo.png ou https://..." required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs focus:border-amber-500 focus:outline-none"/>
                         </div>
                         <div>
                             <label class="block text-xs font-mono text-slate-400 mb-1">Tags (separadas por vírgulas)</label>
@@ -131,7 +186,7 @@
                         <textarea id="proj-desc" rows="3" placeholder="Resumo do programa e das suas funcionalidades..." required class="w-full px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-white text-xs focus:border-amber-500 focus:outline-none"></textarea>
                     </div>
 
-                    <button type="submit" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition-all hover:opacity-90">
+                    <button type="submit" id="btn-submit-projeto" class="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-extrabold text-xs uppercase tracking-wider transition-all hover:opacity-90">
                         + Guardar Projeto na Base de Dados
                     </button>
                 </form>
