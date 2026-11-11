@@ -1,6 +1,6 @@
 // ==========================================
 // SCRIPT PRINCIPAL DO PORTFÓLIO - PAUERDEV.HELP
-// SISTEMA DE PASTAS COM FILE EXPLORER DE PROJETOS
+// SISTEMA DE FILE EXPLORER DE PROJETOS POR PASTA
 // ==========================================
 
 window.addEventListener('mousemove', e => {
@@ -8,14 +8,12 @@ window.addEventListener('mousemove', e => {
     document.body.style.setProperty('--mouse-y', `${e.clientY}px`);
 });
 
-let _todosProjetos = [];
-
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('/api/projetos');
         if (!response.ok) throw new Error('Falha ao comunicar com a API');
-        _todosProjetos = await response.json();
-        renderizarAbasCategorias(_todosProjetos);
+        const projetos = await response.json();
+        renderizarAbasCategorias(projetos);
     } catch (err) {
         console.error('Erro ao carregar projetos da base de dados:', err);
         const container = document.getElementById('pastas-container');
@@ -27,10 +25,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function renderizarAbasCategorias(projetos) {
     const tabsContainer = document.getElementById('pastas-tabs');
-    if (!tabsContainer) return;
+    const container = document.getElementById('pastas-container');
+    if (!tabsContainer || !container) return;
 
     if (!projetos || projetos.length === 0) {
-        document.getElementById('pastas-container').innerHTML = `<div class="text-center py-12 text-slate-500 font-mono text-xs">Ainda não existem projetos registados na base de dados.</div>`;
+        container.innerHTML = `<div class="text-center py-12 text-slate-500 font-mono text-xs">Ainda não existem projetos registados na base de dados.</div>`;
         return;
     }
 
@@ -64,13 +63,9 @@ function renderizarAbasCategorias(projetos) {
             </button>
         `;
     });
-
     tabsContainer.innerHTML = tabsHtml;
 
-    // Renderizar o conteúdo de cada categoria com o seu File Explorer interno de projetos
-    const container = document.getElementById('pastas-container');
     let contentsHtml = '';
-
     catKeys.forEach((catKey, index) => {
         const config = categoriasConfig[catKey] || { id: catKey, title: `📁 ${catKey}`, label: `/${catKey}`, desc: 'Projetos' };
         const projsCat = agrupados[catKey];
@@ -89,26 +84,25 @@ function renderizarAbasCategorias(projetos) {
             </div>
         `;
 
-        // FILE EXPLORER DE PASTAS DE PROJETOS (Aparece em cima para alternar entre projetos)
+        // FILE EXPLORER SUPERIOR: Cada pasta é um projeto
         contentsHtml += `<div class="space-y-6" id="explorer-wrapper-${config.id}">`;
+        contentsHtml += `<div class="flex flex-wrap items-center gap-2 p-2.5 rounded-2xl bg-slate-900/90 border border-slate-800">`;
         
-        // Abas superiores das pastas de projetos individuais
-        contentsHtml += `<div class="flex flex-wrap items-center gap-2 p-2 rounded-2xl bg-slate-900/90 border border-slate-800">`;
         projsCat.forEach((proj, pIdx) => {
             const isProjActive = pIdx === 0;
             contentsHtml += `
-                <button onclick="switchProjectFolder('${config.id}', ${proj.id || pIdx})" id="proj-tab-${config.id}-${proj.id || pIdx}" class="px-4 py-2 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 ${isProjActive ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow' : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'}">
+                <button onclick="switchProjectFolder('${config.id}', ${proj.id || pIdx})" id="proj-tab-${config.id}-${proj.id || pIdx}" class="px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 ${isProjActive ? 'bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-md' : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'}">
                     <span>📂</span> <span>${proj.nome}</span>
                 </button>
             `;
         });
         contentsHtml += `</div>`;
 
-        // Detalhes de cada projeto (Mostra apenas a pasta ativa)
+        // INFORMAÇÕES DA PASTA DO PROJETO ATIVO (Nome, Link, Logo, Imagens e Descrição)
         projsCat.forEach((proj, pIdx) => {
             const isProjActive = pIdx === 0;
-            
-            // Tratamento do Logo (URL ou ícone/emoji)
+
+            // Logo (URL ou ícone/emoji)
             let logoHtml = '⚡';
             if (proj.logo) {
                 if (proj.logo.startsWith('http') || proj.logo.startsWith('/assets/')) {
@@ -118,14 +112,7 @@ function renderizarAbasCategorias(projetos) {
                 }
             }
 
-            // Tratamento de Tags
-            let tagsHtml = '';
-            if (proj.tags) {
-                let tagsArray = Array.isArray(proj.tags) ? proj.tags : proj.tags.replace(/[{}]/g, '').split(',').map(t => t.trim()).filter(Boolean);
-                tagsHtml = tagsArray.map(t => `<span class="px-2.5 py-1 rounded-md bg-slate-900 text-slate-400 border border-slate-800 text-[11px] font-mono">${t}</span>`).join('');
-            }
-
-            // Tratamento de Imagens (entre 2 a 8 imagens)
+            // Imagens (entre 2 a 8 imagens)
             let printsHtml = '';
             let imagensArray = [];
             if (proj.imagens) {
@@ -134,16 +121,23 @@ function renderizarAbasCategorias(projetos) {
 
             if (imagensArray.length > 0) {
                 printsHtml = `
-                <div class="space-y-2 pt-4 border-t border-slate-800/80">
-                    <span class="text-[11px] font-mono text-amber-400 uppercase font-bold">// Galeria de Imagens do Projeto (${imagensArray.length})</span>
+                <div class="space-y-2.5 pt-4 border-t border-slate-800/80">
+                    <span class="text-[11px] font-mono text-amber-400 uppercase font-bold">// Imagens do Projeto (${imagensArray.length})</span>
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                         ${imagensArray.map((imgUrl, idx) => `
-                            <div class="rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden group/img">
-                                <img src="${imgUrl}" alt="Print ${idx+1}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0f172a/64748b?text=Imagem+Projeto';">
+                            <div class="rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden group/img shadow-inner">
+                                <img src="${imgUrl}" alt="Imagem ${idx+1}" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0f172a/64748b?text=Projeto+Img';">
                             </div>
                         `).join('')}
                     </div>
                 </div>`;
+            }
+
+            // Tags
+            let tagsHtml = '';
+            if (proj.tags) {
+                let tagsArray = Array.isArray(proj.tags) ? proj.tags : proj.tags.replace(/[{}]/g, '').split(',').map(t => t.trim()).filter(Boolean);
+                tagsHtml = tagsArray.map(t => `<span class="px-2.5 py-1 rounded-md bg-slate-900 text-slate-400 border border-slate-800 text-[11px] font-mono">${t}</span>`).join('');
             }
 
             contentsHtml += `
@@ -154,11 +148,11 @@ function renderizarAbasCategorias(projetos) {
                                 ${logoHtml}
                             </div>
                             <div>
-                                <span class="text-[11px] font-mono text-amber-400 uppercase tracking-widest">Pasta Ativa: /${proj.nome.toLowerCase().replace(/\s+/g, '-')}</span>
+                                <span class="text-[11px] font-mono text-amber-400 uppercase tracking-widest">Pasta Ativa // ${proj.nome}</span>
                                 <h5 class="text-2xl font-bold text-white mt-0.5">${proj.nome}</h5>
                             </div>
                         </div>
-                        ${proj.link ? `<a href="${proj.link}" target="_blank" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-xs font-mono text-amber-400 transition-all flex items-center gap-2 shadow">Ver Repositório / Link ↗</a>` : ''}
+                        ${proj.link ? `<a href="${proj.link}" target="_blank" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-amber-500/50 text-xs font-mono text-amber-400 transition-all flex items-center gap-2 shadow">Ver Link / Repositório ↗</a>` : ''}
                     </div>
 
                     <div class="space-y-2">
@@ -182,7 +176,6 @@ function renderizarAbasCategorias(projetos) {
     window._catKeys = catKeys;
 }
 
-// Função para alternar entre Categorias principais
 function switchCategory(activeId) {
     if (!window._catKeys) return;
     window._catKeys.forEach(id => {
@@ -204,20 +197,18 @@ function switchCategory(activeId) {
     });
 }
 
-// Função para alternar entre as pastas de projetos dentro de cada categoria (File Explorer superior)
 function switchProjectFolder(catId, projId) {
     const wrapper = document.getElementById('explorer-wrapper-' + catId);
     if (!wrapper) return;
 
-    // Encontrar todos os botões e painéis desta categoria
     const buttons = wrapper.querySelectorAll(`[id^="proj-tab-${catId}-"]`);
     const panels = wrapper.querySelectorAll(`[id^="proj-panel-${catId}-"]`);
 
     buttons.forEach(btn => {
         if (btn.id === `proj-tab-${catId}-${projId}`) {
-            btn.className = "px-4 py-2 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow";
+            btn.className = "px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-md";
         } else {
-            btn.className = "px-4 py-2 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 bg-slate-950 text-slate-400 border border-slate-800 hover:text-white";
+            btn.className = "px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 bg-slate-950 text-slate-400 border border-slate-800 hover:text-white";
         }
     });
 
@@ -279,7 +270,7 @@ if (input && body) {
             if (cmd === 'pauer --help' || cmd === 'help') {
                 resp = "COMANDOS DISPONÍVEIS:\n • pauer --services : Ver pastas de serviços\n • pauer --github   : Abrir GitHub (fsafaradias)\n • pauer --rescue   : Ativar SOS técnico urgente\n • clear            : Limpar consola";
             } else if (cmd === 'pauer --services') {
-                resp = "Categorias e file explorers carregados da base de dados com sucesso.";
+                resp = "File explorers e pastas de projetos carregados da base de dados.";
             } else if (cmd === 'pauer --github') {
                 window.open('https://github.com/fsafaradias', '_blank');
                 resp = "A abrir https://github.com/fsafaradias...";
