@@ -169,7 +169,7 @@ function renderizarSecçõesIndependentes(projetos) {
                 printsHtml = `
                 <div class="space-y-3 pt-4 border-t border-slate-800/80 mt-6">
                     <span class="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                        <span>📷</span> Capturas de Ecrã (Clica para ampliar em alta resolução)
+                        <span>📷</span> Capturas de Ecrã (Clica para ampliar)
                     </span>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         ${projAtual.imagens.map((imgUrl, imgIdx) => `
@@ -201,18 +201,18 @@ function renderizarSecçõesIndependentes(projetos) {
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                    <!-- LOGÓTIPO GRANDE SEM CAIXA ENVOLVENTE -->
-                    <div class="lg:col-span-4 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
-                        <div class="w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center z-10 transition-transform duration-300 hover:scale-105">
+                    <!-- LOGÓTIPO / CAPA MAIOR E COM MAIS DESTAQUE -->
+                    <div class="lg:col-span-5 flex flex-col items-center justify-center p-4 text-center relative overflow-hidden">
+                        <div class="w-64 h-64 sm:w-72 sm:h-72 lg:w-80 lg:h-80 flex items-center justify-center z-10 transition-transform duration-500 group-hover:scale-105">
                             ${logoContent}
                         </div>
                     </div>
 
-                    <!-- CONTEÚDO E DETALHES -->
-                    <div class="lg:col-span-8 space-y-6">
+                    <!-- CONTEÚDO E DETALHES (Ajustado para o espaço restante) -->
+                    <div class="lg:col-span-7 space-y-6">
                         <div class="flex flex-wrap items-center justify-between gap-4">
                             <h3 class="text-2xl sm:text-4xl font-black text-white tracking-tight">${projAtual.nome}</h3>
-                            ${projAtual.link ? `<a href="${projAtual.link}" target="_blank" class="px-4.5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500/20 text-xs font-mono text-amber-400 font-semibold transition-all shadow-md flex items-center gap-2"><span>Ver Repositório / Demo</span> <span>↗</span></a>` : ''}
+                            ${projAtual.link ? `<a href="${projAtual.link}" target="_blank" class="px-4.5 py-2.5 rounded-xl bg-amber-500/10 border border-amber-500/40 hover:bg-amber-500/20 text-xs font-mono text-amber-400 font-semibold transition-all shadow-md flex items-center gap-2"><span>Ver mais...</span> <span>↗</span></a>` : ''}
                         </div>
 
                         <p class="text-sm sm:text-base text-slate-300 leading-relaxed font-sans">${projAtual.descricao}</p>
