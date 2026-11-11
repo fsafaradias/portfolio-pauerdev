@@ -73,7 +73,7 @@ function renderizarAbasPastas(projetos) {
     const catKeys = Object.keys(agrupados);
     if (catKeys.length === 0) return;
 
-    // Construir o HTML das Abas (Tabs)
+    // Construir o HTML das Abas (Tabs) com o visual exacto em estilo de pastas
     let tabsHtml = '';
     let contentsHtml = '';
 
@@ -87,15 +87,15 @@ function renderizarAbasPastas(projetos) {
         const projsCat = agrupados[catKey];
         const isActive = index === 0;
 
-        // Botão da Aba
+        // Estilo exacto da aba em formato de pasta
         tabsHtml += `
-            <button onclick="switchFolder('${config.id}')" id="tab-${config.id}" class="px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 ${isActive ? 'bg-slate-900 text-amber-400 border border-slate-800 border-b-0 shadow-lg' : 'bg-slate-950/60 text-slate-500 border border-transparent hover:text-slate-300'}">
-                📁 <span>${config.label}</span>
-                <span class="px-2 py-0.5 rounded-full ${isActive ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 text-slate-400'} text-[10px]">${projsCat.length} ${projsCat.length === 1 ? 'Repo' : 'Repos'}</span>
+            <button onclick="switchFolder('${config.id}')" id="tab-${config.id}" class="px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2.5 ${isActive ? 'bg-slate-900 text-amber-400 border border-slate-800 border-b-0 shadow-lg' : 'bg-slate-950/60 text-slate-500 border border-transparent hover:text-slate-300'}">
+                <span>📁</span> <span>${config.label}</span>
+                <span class="px-2.5 py-0.5 rounded-full ${isActive ? 'bg-amber-500/20 text-amber-300' : 'bg-slate-800 text-slate-400'} text-[10px]">${projsCat.length} ${projsCat.length === 1 ? 'Repo' : 'Repos'}</span>
             </button>
         `;
 
-        // Conteúdo da Pasta
+        // Conteúdo da Pasta (Apenas o ativo fica visível inicialmente)
         contentsHtml += `
             <div id="folder-${config.id}" class="space-y-6 ${isActive ? '' : 'hidden'}">
                 <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 flex-wrap gap-4">
@@ -189,7 +189,7 @@ function renderizarAbasPastas(projetos) {
     window._folderIds = catKeys;
 }
 
-// Função global para alternar entre as abas/pastas
+// Função global para alternar entre as abas/pastas por categoria
 function switchFolder(activeId) {
     if (!window._folderIds) return;
     window._folderIds.forEach(id => {
@@ -199,14 +199,14 @@ function switchFolder(activeId) {
 
         if (id === activeId) {
             folder.classList.remove('hidden');
-            tab.className = "px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 bg-slate-900 text-amber-400 border border-slate-800 border-b-0 shadow-lg";
+            tab.className = "px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2.5 bg-slate-900 text-amber-400 border border-slate-800 border-b-0 shadow-lg";
             const badge = tab.querySelector('span:last-child');
-            if (badge) badge.className = "px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px]";
+            if (badge) badge.className = "px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px]";
         } else {
             folder.classList.add('hidden');
-            tab.className = "px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2 bg-slate-950/60 text-slate-500 border border-transparent hover:text-slate-300";
+            tab.className = "px-6 py-3.5 rounded-t-2xl font-mono text-xs font-bold transition-all flex items-center gap-2.5 bg-slate-950/60 text-slate-500 border border-transparent hover:text-slate-300";
             const badge = tab.querySelector('span:last-child');
-            if (badge) badge.className = "px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px]";
+            if (badge) badge.className = "px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px]";
         }
     });
 }
