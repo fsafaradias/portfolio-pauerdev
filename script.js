@@ -1,25 +1,29 @@
-// Efeito de Fundo Animado Automático (Partículas Tecnológicas)
+// Efeito de Fundo: Grelha Tecnológica + Spotlight Dinâmico nos Cartões
 document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
-    const numParticles = 25;
 
-    for (let i = 0; i < numParticles; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'absolute rounded-full pointer-events-none opacity-20 animate-pulse z-0';
-        
-        const size = Math.random() * 4 + 1;
-        particle.style.width = `${size}px`;
-        particle.style.height = `${size}px`;
-        particle.style.top = `${Math.random() * 100}%`;
-        particle.style.left = `${Math.random() * 100}%`;
-        particle.style.backgroundColor = i % 2 === 0 ? '#FB8500' : '#FF4D4D';
-        particle.style.animationDuration = `${Math.random() * 3 + 2}s`;
-        
-        body.appendChild(particle);
-    }
+    // Criar camada de Grelha Tecnológica no fundo
+    const gridLayer = document.createElement('div');
+    gridLayer.className = 'fixed inset-0 pointer-events-none z-0 opacity-15';
+    gridLayer.style.backgroundImage = 'radial-gradient(rgba(251, 133, 0, 0.4) 1px, transparent 1px), radial-gradient(rgba(255, 77, 77, 0.2) 1px, transparent 1px)';
+    gridLayer.style.backgroundSize = '32px 32px';
+    gridLayer.style.backgroundPosition = '0 0, 16px 16px';
+    body.appendChild(gridLayer);
+
+    // Efeito Spotlight do Rato nos Cartões
+    document.addEventListener('mousemove', e => {
+        const cards = document.querySelectorAll('.studio-card-glow');
+        cards.forEach(card => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
 });
 
-let projetoAtivoIndex = {}; // Guarda o index do projeto selecionado por categoria
+let projetoAtivoIndex = {};
 
 // Carregar projetos da Base de Dados via API ao iniciar a página
 document.addEventListener('DOMContentLoaded', async () => {
@@ -38,7 +42,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function selecionarProjetoCategoria(catKey, index) {
     projetoAtivoIndex[catKey] = index;
-    // Recarregar os dados mantendo a seleção atual
     fetch('/api/projetos')
         .then(res => res.json())
         .then(projetos => renderizarSecçõesIndependentes(projetos));
@@ -53,7 +56,6 @@ function renderizarSecçõesIndependentes(projetos) {
         return;
     }
 
-    // Configuração detalhada de cada categoria / file explorer independente
     const categoriasConfig = {
         'discord-bots': { 
             id: 'sec-discord-bots', 
@@ -94,7 +96,6 @@ function renderizarSecçõesIndependentes(projetos) {
         }
     };
 
-    // Agrupar projetos por categoria
     const agrupados = {};
     projetos.forEach(proj => {
         const cat = proj.categoria || 'software-tools';
@@ -104,7 +105,6 @@ function renderizarSecçõesIndependentes(projetos) {
 
     let htmlFinal = '';
 
-    // Iterar sobre cada categoria existente e criar um bloco File Explorer independente
     for (const [catKey, projsCat] of Object.entries(agrupados)) {
         const config = categoriasConfig[catKey] || { 
             id: `sec-${catKey}`, 
@@ -113,15 +113,14 @@ function renderizarSecçõesIndependentes(projetos) {
             desc: 'Projetos e repositórios da categoria.' 
         };
 
-        if (projAtivoIndex(catKey, projsCat.length) >= projsCat.length) {
+        if (projetoAtivoIndex[catKey] === undefined || projetoAtivoIndex[catKey] >= projsCat.length) {
             projetoAtivoIndex[catKey] = 0;
         }
-        const activeIdx = projAtivoIndex(catKey, projsCat.length);
+        const activeIdx = projetoAtivoIndex[catKey];
         const projAtual = projsCat[activeIdx];
 
         htmlFinal += `
         <section id="${config.id}" class="max-w-6xl mx-auto px-6 py-16 relative z-10 border-t border-slate-800/60">
-            <!-- Cabeçalho da Categoria / File Explorer -->
             <div class="mb-6 flex flex-wrap items-center justify-between gap-4">
                 <div>
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md ${config.isPriority ? 'bg-red-500/10 border-red-500/30 text-red-400' : 'bg-amber-500/10 border-amber-500/30 text-amber-400'} text-xs font-mono mb-3 border">
@@ -138,7 +137,6 @@ function renderizarSecçõesIndependentes(projetos) {
             </div>
         `;
 
-        // Se houver mais do que um projeto nesta categoria, mostrar subpastas para alternar
         if (projsCat.length > 1) {
             htmlFinal += `
             <div class="mb-4 flex flex-wrap items-center gap-2 font-mono text-xs">
@@ -160,7 +158,6 @@ function renderizarSecçõesIndependentes(projetos) {
             htmlFinal += `</div>`;
         }
 
-        // Cartão Avançado do Projeto Ativo na Categoria
         if (projAtual) {
             let tagsHtml = '';
             if (projAtual.tags && Array.isArray(projAtual.tags)) {
@@ -189,6 +186,11 @@ function renderizarSecçõesIndependentes(projetos) {
 
             const nomePastaProj = projAtual.nome ? projAtual.nome.toLowerCase().replace(/[^a-z0-9]/g, '-') : 'projeto';
 
+            // Renderização do logótipo a partir da base de dados (suporta caminhos relativos como /assets/img/... ou URLs)
+            const logoContent = projAtual.logo 
+                ? `<img src="${projAtual.logo}" alt="Logo" class="w-full h-full object-contain drop-shadow-2xl">` 
+                : `<span class="text-amber-400">⚡</span>`;
+
             htmlFinal += `
             <div class="studio-card-glow p-6 sm:p-10 border border-slate-800/80 bg-slate-950/95 rounded-3xl shadow-2xl relative overflow-hidden group">
                 <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-900 text-xs font-mono text-slate-500">
@@ -196,18 +198,14 @@ function renderizarSecçõesIndependentes(projetos) {
                         <span class="text-amber-500">📂</span>
                         <span class="text-slate-300 font-semibold">dir: ${config.pathName}/${nomePastaProj}/</span>
                     </div>
-                    <span class="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-slate-400">ID: #${projAtual.id || 1}</span>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                    <!-- LOGO MAIOR E COM DESTAQUE AVANÇADO -->
-                    <div class="lg:col-span-4 flex flex-col items-center justify-center p-8 rounded-3xl bg-gradient-to-b from-slate-900 via-slate-900/90 to-slate-950 border border-slate-800/90 text-center relative overflow-hidden group/logo shadow-inner">
-                        <div class="absolute inset-0 bg-amber-500/5 opacity-0 group-hover/logo:opacity-100 transition-opacity pointer-events-none"></div>
-                        <div class="w-36 h-36 sm:w-40 sm:h-40 rounded-3xl bg-slate-950 border-2 border-amber-500/50 flex items-center justify-center text-7xl shadow-2xl mb-5 z-10 overflow-hidden transform group-hover/logo:scale-105 transition-transform duration-300">
-                            ${projAtual.logo && projAtual.logo.startsWith('http') ? `<img src="${projAtual.logo}" alt="Logo" class="w-full h-full object-cover">` : (projAtual.logo || '⚡')}
+                    <!-- LOGÓTIPO GRANDE SEM CAIXA ENVOLVENTE -->
+                    <div class="lg:col-span-4 flex flex-col items-center justify-center p-6 text-center relative overflow-hidden">
+                        <div class="w-48 h-48 sm:w-56 sm:h-56 flex items-center justify-center z-10 transition-transform duration-300 hover:scale-105">
+                            ${logoContent}
                         </div>
-                        <h4 class="text-2xl font-black text-white z-10 tracking-wide">${projAtual.nome}</h4>
-                        <span class="text-xs font-mono text-amber-400 z-10 mt-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">${projAtual.categoria}</span>
                     </div>
 
                     <!-- CONTEÚDO E DETALHES -->
@@ -236,14 +234,32 @@ function renderizarSecçõesIndependentes(projetos) {
     container.innerHTML = htmlFinal;
 }
 
-function projAtivoIndex(catKey, total) {
-    if (projetoAtivoIndex[catKey] === undefined || projetoAtivoIndex[catKey] >= total) {
-        projetoAtivoIndex[catKey] = 0;
-    }
-    return projetoAtivoIndex[catKey];
-}
+// Estilo CSS dinâmico para o efeito Spotlight do Rato nos Cartões
+document.addEventListener('DOMContentLoaded', () => {
+    const styleSpotlight = document.createElement('style');
+    styleSpotlight.innerHTML = `
+        .studio-card-glow {
+            position: relative;
+            overflow: hidden;
+        }
+        .studio-card-glow::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(800px circle at var(--mouse-x, 0px) var(--mouse-y, 0px), rgba(251, 133, 0, 0.08), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .studio-card-glow:hover::before {
+            opacity: 1;
+        }
+    `;
+    document.head.appendChild(styleSpotlight);
+});
 
-// Criar o Modal de Visualização de Imagens em Alta Resolução
+// Modal de Visualização de Imagens
 document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('modal-imagem-container')) {
         const modalHtml = `
@@ -282,12 +298,11 @@ window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') fecharModalImagem();
 });
 
-// Lógica de submissão do formulário de contacto
+// Formulário de Contacto
 const formContacto = document.getElementById('form-contacto');
 if (formContacto) {
     formContacto.addEventListener('submit', async (e) => {
         e.preventDefault();
-
         const nome = document.getElementById('form-nome').value;
         const email = document.getElementById('form-email').value;
         const categoria = document.getElementById('form-select').value;
@@ -313,7 +328,7 @@ if (formContacto) {
     });
 }
 
-// Lógica da Consola / Terminal CLI Interativo
+// Terminal CLI Interativo
 const input = document.getElementById('terminal-input');
 const body = document.getElementById('terminal-body');
 
