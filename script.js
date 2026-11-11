@@ -1,13 +1,18 @@
+// ==========================================
+// SCRIPT PRINCIPAL DO PORTFÓLIO - PAUERDEV.HELP
+// ==========================================
+
 // Rastreamento do rato para o efeito Spotlight no fundo
 window.addEventListener('mousemove', e => {
     document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
-    document.body.style.setProperty('--mouse-y`, `${e.clientY}px`);
+    document.body.style.setProperty('--mouse-y', `${e.clientY}px`);
 });
 
 // Carregar projetos da Base de Dados via API ao iniciar a página
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('/api/projetos');
+        if (!response.ok) throw new Error('Falha ao comunicar com a API');
         const projetos = await response.json();
         renderizarProjetos(projetos);
     } catch (err) {
@@ -64,22 +69,37 @@ function renderizarProjetos(projetos) {
         `;
 
         projsCat.forEach(proj => {
-            // Renderizar tags se existirem
-            let tagsHtml = '';
-            if (proj.tags && Array.isArray(proj.tags)) {
-                tagsHtml = proj.tags.map(t => `<span class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 border border-slate-800">${t}</span>`).join('');
+            let logoHtml = '';
+            if (proj.logo) {
+                if (proj.logo.startsWith('http') || proj.logo.startsWith('/assets/')) {
+                    logoHtml = `<img src="${proj.logo}" alt="Logo" class="w-full h-full object-cover">`;
+                } else {
+                    logoHtml = proj.logo;
+                }
+            } else {
+                logoHtml = '⚡';
             }
 
-            // Renderizar imagens/prints adicionais se existirem
+            let tagsHtml = '';
+            if (proj.tags) {
+                let tagsArray = Array.isArray(proj.tags) ? proj.tags : proj.tags.replace(/[{}]/g, '').split(',').map(t => t.trim()).filter(Boolean);
+                tagsHtml = tagsArray.map(t => `<span class="px-3 py-1 rounded-full bg-slate-900 text-slate-400 border border-slate-800">${t}</span>`).join('');
+            }
+
             let printsHtml = '';
-            if (proj.imagens && Array.isArray(proj.imagens) && proj.imagens.length > 0) {
+            let imagensArray = [];
+            if (proj.imagens) {
+                imagensArray = Array.isArray(proj.imagens) ? proj.imagens : proj.imagens.replace(/[{}]/g, '').split(',').map(img => img.trim()).filter(Boolean);
+            }
+
+            if (imagensArray.length > 0) {
                 printsHtml = `
                 <div class="space-y-2 pt-2">
                     <span class="text-xs font-mono text-slate-400 uppercase">// Capturas de Ecrã</span>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        ${proj.imagens.map((imgUrl, idx) => `
+                        ${imagensArray.map((imgUrl, idx) => `
                             <div class="rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center text-xs font-mono text-slate-500 overflow-hidden">
-                                <img src="${imgUrl}" alt="Print ${idx+1}" class="w-full h-full object-cover">
+                                <img src="${imgUrl}" alt="Print ${idx+1}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0f172a/64748b?text=Imagem+Indisponivel';">
                             </div>
                         `).join('')}
                     </div>
@@ -91,7 +111,7 @@ function renderizarProjetos(projetos) {
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                     <div class="lg:col-span-4 flex flex-col items-center justify-center p-6 rounded-2xl bg-gradient-to-b from-slate-900 to-slate-900/50 border border-slate-800 text-center relative overflow-hidden group">
                         <div class="w-28 h-28 rounded-2xl bg-slate-900 border-2 border-slate-700 flex items-center justify-center text-5xl shadow-2xl mb-4 z-10 overflow-hidden">
-                            ${proj.logo && proj.logo.startsWith('http') ? `<img src="${proj.logo}" alt="Logo" class="w-full h-full object-cover">` : (proj.logo || '⚡')}
+                            ${logoHtml}
                         </div>
                         <h4 class="text-lg font-bold text-white z-10">${proj.nome}</h4>
                         <span class="text-xs font-mono text-amber-400 z-10 mt-1">${proj.categoria}</span>
