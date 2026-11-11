@@ -197,12 +197,14 @@ function renderizarSecçõesIndependentes(projetos) {
             
             if (listaImagens.length > 0) {
                 const totalImagens = listaImagens.length;
-                // Exibe no máximo 2 imagens visíveis diretamente na grelha
                 const imagensVisiveis = listaImagens.slice(0, 2);
                 const imagensOcultasCount = totalImagens - 2;
+                
+                // Codificar a lista completa em Base64 para navegação segura no modal
+                const b64Imagens = btoa(JSON.stringify(listaImagens));
 
                 let gridItemsHtml = imagensVisiveis.map((imgUrl, imgIdx) => `
-                    <div onclick="abrirModalImagem('${imgUrl}')" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
+                    <div onclick="abrirGaleriaBase64('${b64Imagens}', ${imgIdx})" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
                         <img src="${imgUrl}" alt="Print ${imgIdx+1}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-xs font-mono gap-1">
                             <span>🔍</span> <span>Ver Imagem</span>
@@ -212,9 +214,9 @@ function renderizarSecçõesIndependentes(projetos) {
 
                 // Se houver mais do que 2 imagens, a 3ª caixa vira o indicador de "+X"
                 if (imagensOcultasCount > 0) {
-                    const terceiraImagemUrl = listaImagens[2]; // Clica para abrir a próxima
+                    const terceiraImagemUrl = listaImagens[2];
                     gridItemsHtml += `
-                    <div onclick="abrirModalImagem('${terceiraImagemUrl}')" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
+                    <div onclick="abrirGaleriaBase64('${b64Imagens}', 2)" class="group relative rounded-xl border border-slate-800 bg-slate-900 aspect-video flex items-center justify-center overflow-hidden cursor-pointer hover:border-amber-500/60 transition-all shadow-md">
                         <img src="${terceiraImagemUrl}" alt="Mais prints" class="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-300">
                         <div class="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-amber-400 font-mono font-bold text-base gap-1 group-hover:bg-black/60 transition-colors">
                             <span>+${imagensOcultasCount}</span>
@@ -308,16 +310,30 @@ document.addEventListener('DOMContentLoaded', () => {
     document.head.appendChild(styleSpotlight);
 });
 
-// Modal de Visualização de Imagens
+// Modal de Visualização de Imagens com Suporte a Galeria (Navegação Next/Prev)
 document.addEventListener('DOMContentLoaded', () => {
     if (!document.getElementById('modal-imagem-container')) {
         const modalHtml = `
             <div id="modal-imagem-container" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4">
-                <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center">
-                    <button onclick="fecharModalImagem()" class="absolute -top-12 right-0 text-slate-300 hover:text-white font-mono text-xs px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 transition-colors shadow-lg">
+                <div class="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center justify-center">
+                    <!-- Botão Fechar -->
+                    <button onclick="fecharModalImagem()" class="absolute -top-12 right-0 text-slate-300 hover:text-white font-mono text-xs px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 transition-colors shadow-lg z-20">
                         ✕ Fechar [ESC]
                     </button>
-                    <img id="modal-imagem-src" src="" alt="Zoom Print" class="max-w-full max-h-[85vh] rounded-2xl border border-slate-700 object-contain shadow-2xl">
+                    
+                    <!-- Botões de Navegação Lateral -->
+                    <button id="btn-modal-prev" onclick="mudarImagemModal(-1)" class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 bg-slate-900/80 hover:bg-slate-800 text-amber-400 p-3 sm:p-4 rounded-full border border-slate-700 transition-colors shadow-xl z-20 hidden items-center justify-center text-xl font-bold">
+                        ‹
+                    </button>
+                    <button id="btn-modal-next" onclick="mudarImagemModal(1)" class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 bg-slate-900/80 hover:bg-slate-800 text-amber-400 p-3 sm:p-4 rounded-full border border-slate-700 transition-colors shadow-xl z-20 hidden items-center justify-center text-xl font-bold">
+                        ›
+                    </button>
+
+                    <!-- Imagem Ativa -->
+                    <img id="modal-imagem-src" src="" alt="Zoom Print" class="max-w-full max-h-[80vh] rounded-2xl border border-slate-700 object-contain shadow-2xl">
+                    
+                    <!-- Contador de Imagens -->
+                    <div id="modal-contador" class="mt-4 text-xs font-mono text-amber-400/90 bg-slate-900/80 px-4 py-1.5 rounded-full border border-slate-800 shadow-md"></div>
                 </div>
             </div>
         `;
@@ -325,13 +341,70 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-function abrirModalImagem(url) {
-    const modal = document.getElementById('modal-imagem-container');
+let modalImagensAtuais = [];
+let modalIndiceAtual = 0;
+
+function abrirGaleriaBase64(b64, indiceInicial = 0) {
+    try {
+        const imagens = JSON.parse(atob(b64));
+        if (Array.isArray(imagens) && imagens.length > 0) {
+            modalImagensAtuais = imagens;
+            modalIndiceAtual = indiceInicial;
+            atualizarVisualizacaoModal();
+            
+            const modal = document.getElementById('modal-imagem-container');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+    } catch(err) {
+        console.error('Erro ao abrir galeria de imagens:', err);
+    }
+}
+
+function mudarImagemModal(direcao) {
+    if (modalImagensAtuais.length <= 1) return;
+    modalIndiceAtual += direcao;
+    if (modalIndiceAtual < 0) {
+        modalIndiceAtual = modalImagensAtuais.length - 1;
+    } else if (modalIndiceAtual >= modalImagensAtuais.length) {
+        modalIndiceAtual = 0;
+    }
+    atualizarVisualizacaoModal();
+}
+
+function atualizarVisualizacaoModal() {
     const img = document.getElementById('modal-imagem-src');
-    if (modal && img) {
-        img.src = url;
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+    const contador = document.getElementById('modal-contador');
+    const btnPrev = document.getElementById('btn-modal-prev');
+    const btnNext = document.getElementById('btn-modal-next');
+
+    if (img && modalImagensAtuais.length > 0) {
+        img.src = modalImagensAtuais[modalIndiceAtual];
+    }
+
+    if (contador) {
+        if (modalImagensAtuais.length > 1) {
+            contador.textContent = `Imagem ${modalIndiceAtual + 1} de ${modalImagensAtuais.length}`;
+            contador.classList.remove('hidden');
+        } else {
+            contador.classList.add('hidden');
+        }
+    }
+
+    if (btnPrev && btnNext) {
+        if (modalImagensAtuais.length > 1) {
+            btnPrev.classList.remove('hidden');
+            btnPrev.classList.add('flex');
+            btnNext.classList.remove('hidden');
+            btnNext.classList.add('flex');
+        } else {
+            btnPrev.classList.add('hidden');
+            btnPrev.classList.remove('flex');
+            btnNext.classList.add('hidden');
+            btnNext.classList.remove('flex');
+        }
     }
 }
 
@@ -343,8 +416,20 @@ function fecharModalImagem() {
     }
 }
 
+// Atalhos de Teclado (ESC para fechar, Setas Esquerda/Direita para navegar na galeria)
 window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') fecharModalImagem();
+    const modal = document.getElementById('modal-imagem-container');
+    const isOpen = modal && !modal.classList.contains('hidden');
+    
+    if (!isOpen) return;
+
+    if (e.key === 'Escape') {
+        fecharModalImagem();
+    } else if (e.key === 'ArrowLeft') {
+        mudarImagemModal(-1);
+    } else if (e.key === 'ArrowRight') {
+        mudarImagemModal(1);
+    }
 });
 
 // Formulário de Contacto
