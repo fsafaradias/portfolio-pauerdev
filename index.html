@@ -3,20 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PauerDev.help — Showcase de Projetos</title>
-    <!-- Tailwind CSS (Classes utilitárias) -->
+    <title>PauerDev.help | Interactive Folder Architecture & Studio CLI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Ficheiro de Estilos Personalizado -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="selection:bg-amber-500 selection:text-slate-950 relative overflow-x-hidden bg-grid-studio spotlight bg-[#060911]">
 
-    <!-- Brilhos de Fundo Neon Ambientais -->
-    <div class="glow-ambient top-[-10%] left-[20%] bg-amber-600/10"></div>
-    <div class="glow-ambient top-[40%] right-[-10%] bg-red-600/10"></div>
-    <div class="glow-ambient bottom-[10%] left-[-5%] bg-blue-600/10"></div>
+    <!-- Ambient Mesh Glows -->
+    <div class="fixed top-[-10%] left-[20%] w-[600px] h-[600px] bg-amber-600/10 rounded-full blur-[160px] pointer-events-none z-0"></div>
+    <div class="fixed top-[40%] right-[-10%] w-[500px] h-[500px] bg-red-600/10 rounded-full blur-[160px] pointer-events-none z-0"></div>
 
-    <!-- Header / Barra de Navegação -->
+    <!-- Header / Navbar -->
     <header class="fixed top-0 left-0 w-full z-50 bg-[#060911]/90 backdrop-blur-2xl border-b border-slate-800/80">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-3 group">
@@ -74,17 +71,17 @@
                         <tspan fill="url(#pauer-nav-orange)">Dev</tspan><tspan fill="url(#pauer-nav-red)">.help</tspan>
                     </text>
                     <text x="122" y="86" fill="#64748B" font-family="'Fira Code', monospace" font-size="11" font-weight="600" letter-spacing="3">STUDIO ARCHITECTURE // RESCUE CLI</text>
+                    <circle cx="485" cy="54" r="4" fill="#22C55E" filter="url(#pauer-nav-neon)" />
                 </svg>
             </a>
 
-            <nav class="hidden md:flex items-center gap-6 text-xs font-semibold uppercase tracking-widest text-slate-400">
-                <a href="#sec-discord-bots" class="hover:text-amber-400 transition-colors">Discord Bots</a>
-                <a href="#sec-software-tools" class="hover:text-amber-400 transition-colors">Software Tools</a>
-                <a href="#sec-game-development" class="hover:text-amber-400 transition-colors">Game Dev</a>
-                <a href="#sec-web-development" class="hover:text-amber-400 transition-colors">Web Dev</a>
-                <a href="#pauerhelps" class="text-red-400 hover:text-red-300 font-bold flex items-center gap-1.5">
-                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> SOS
+            <nav class="hidden md:flex items-center gap-8 text-xs font-semibold uppercase tracking-widest text-slate-400">
+                <a href="#servicos" class="hover:text-white transition-colors">Pastas de Serviços</a>
+                <a href="#pauerhelps" class="hover:text-red-400 transition-colors flex items-center gap-2 text-red-400 font-bold">
+                    <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                    PauerHelps (SOS)
                 </a>
+                <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
             </nav>
 
             <a href="#contacto" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-extrabold text-xs tracking-wider uppercase transition-all shadow-lg shadow-amber-500/15">
@@ -94,23 +91,21 @@
     </header>
 
     <main class="pt-28">
-        <!-- Hero Section com Efeito Typewriter em CSS -->
-        <section class="max-w-6xl mx-auto px-6 py-16 relative z-10 text-center">
-            <div class="space-y-8 max-w-4xl mx-auto">
+        <!-- Hero Section com CLI -->
+        <section class="max-w-6xl mx-auto px-6 py-16 relative z-10">
+            <div class="space-y-8 text-center max-w-4xl mx-auto">
                 <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full border border-amber-500/20 bg-amber-500/10 text-amber-300 text-xs font-mono">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                    PAUERDEV STUDIO ARCHITECTURE
+                    STUDIO ARCHITECTURE & EMERGENCY CLI
                 </div>
 
-                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.1] min-h-[120px] flex flex-col justify-center items-center">
-                    <span>Projetos focados em</span>
-                    <div class="typewriter-wrapper mt-2 font-mono">
-                        <span class="typewriter-text text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-red-500 px-1"></span>
-                    </div>
+                <h1 class="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.08]">
+                    Projetos da Base de Dados & <br/>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-red-500">Engenharia de Resgate SOS</span>
                 </h1>
 
                 <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed">
-                    Sou o <strong>Francisco Safara Dias</strong>. Explora as secções abaixo com os projetos carregados diretamente da base de dados PostgreSQL.
+                    Sou o <strong>Francisco Safara Dias</strong>. Explora as pastas de serviços abaixo com os projetos carregados em tempo real diretamente da base de dados PostgreSQL.
                 </p>
 
                 <!-- TERMINAL CLI INTERATIVO -->
@@ -125,7 +120,7 @@
                         <span class="text-[11px] text-amber-400 font-mono">STATUS: ONLINE</span>
                     </div>
 
-                    <div id="terminal-body" class="p-6 h-48 overflow-y-auto space-y-2 text-slate-300">
+                    <div id="terminal-body" class="p-6 h-64 overflow-y-auto space-y-2 text-slate-300">
                         <div class="text-slate-500">[PAUER-DEV STUDIO ARCHITECTURE LOADED]</div>
                         <div class="text-slate-400">Escreve <span class="text-amber-400 font-bold">'pauer --help'</span> para executar comandos.</div>
                     </div>
@@ -138,11 +133,23 @@
             </div>
         </section>
 
-        <!-- CONTENTOR DINÂMICO DOS PROJETOS DA BASE DE DADOS -->
-        <div id="projetos-container">
-            <!-- Os projetos serão injetados dinamicamente aqui via JavaScript -->
-            <div class="text-center py-16 text-slate-500 font-mono text-xs">A carregar projetos da base de dados...</div>
-        </div>
+        <!-- SECÇÃO DE PASTAS INTERATIVAS DINÂMICAS (BASE DE DADOS) -->
+        <section id="servicos" class="max-w-6xl mx-auto px-6 py-16 relative z-10">
+            <div class="mb-8">
+                <h2 class="text-xs font-mono font-bold text-amber-400 tracking-widest uppercase mb-2">// Pastas de Serviços & Base de Dados PostgreSQL</h2>
+                <h3 class="text-3xl sm:text-4xl font-extrabold text-white">Arquivos de Projetos Interativos</h3>
+            </div>
+
+            <!-- Abas de Pastas Dinâmicas injetadas via JS -->
+            <div id="pastas-tabs" class="flex flex-wrap items-end gap-2 border-b border-slate-800">
+                <!-- Gerado dinamicamente -->
+            </div>
+
+            <!-- Corpo da Pasta Aberta (Carregado via API) -->
+            <div id="pastas-container" class="p-8 rounded-b-3xl studio-card-glow border border-slate-800 bg-slate-950/90 min-h-[420px]">
+                <div class="text-center py-16 text-slate-500 font-mono text-xs">A carregar projetos da base de dados...</div>
+            </div>
+        </section>
 
         <!-- SECÇÃO PAUERHELPS SOS -->
         <section id="pauerhelps" class="max-w-6xl mx-auto px-6 py-12 relative z-10">
@@ -160,7 +167,7 @@
             </div>
         </section>
 
-        <!-- FORMULÁRIO DE CONTACTO -->
+        <!-- Formulário de Contacto -->
         <section id="contacto" class="max-w-3xl mx-auto px-6 py-20 relative z-10">
             <div class="studio-card-glow p-8 sm:p-12 border border-slate-800">
                 <h3 class="text-2xl font-bold text-white mb-2">Pedir Ajuda ou Orçamento</h3>
