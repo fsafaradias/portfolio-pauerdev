@@ -1,6 +1,6 @@
 // ==========================================
 // SCRIPT PRINCIPAL DO PORTFÓLIO - PAUERDEV.HELP
-// SISTEMA DE FILE EXPLORER DE PROJETOS POR PASTA
+// FILE EXPLORER POR CATEGORIA COM PASTAS DE PROJETOS
 // ==========================================
 
 window.addEventListener('mousemove', e => {
@@ -33,26 +33,30 @@ function renderizarAbasCategorias(projetos) {
         return;
     }
 
+    // Configuração exata das 4 categorias solicitadas
     const categoriasConfig = {
-        'discord-bots': { id: 'discord-bots', title: '🤖 discord-bots', label: '/discord-bots', desc: 'Automação para comunidades e bots interativos.' },
-        'software-tools': { id: 'software-tools', title: '🛠️ software-tools', label: '/software-tools', desc: 'Ferramentas utilitárias e automação.' },
-        'game-development': { id: 'game-development', title: '🎮 game-development', label: '/game-development', desc: 'Desenvolvimento de videojogos e protótipos.' },
-        'web-development': { id: 'web-development', title: '🌐 web-development', label: '/web-development', desc: 'Aplicações web modernas e plataformas SaaS.' }
+        'discord-bots': { id: 'discord-bots', title: '🤖 discord-bots', label: '/discord-bots', desc: 'Automação para comunidades e bots interativos em Node.js.' },
+        'software-tools': { id: 'software-tools', title: '🛠️ software-tools', label: '/software-tools', desc: 'Ferramentas utilitárias, scripts de automação e web scraping.' },
+        'game-development': { id: 'game-development', title: '🎮 game-development', label: '/game-development', desc: 'Desenvolvimento de videojogos 2D/3D e protótipos interativos.' },
+        'web-development': { id: 'web-development', title: '🌐 web-development', label: '/web-development', desc: 'Aplicações web modernas, plataformas SaaS e APIs de alta performance.' }
     };
 
+    // Agrupar projetos por categoria
     const agrupados = {};
+    Object.keys(categoriasConfig).forEach(catKey => { agrupados[catKey] = []; });
+    
     projetos.forEach(proj => {
         const cat = proj.categoria || 'software-tools';
         if (!agrupados[cat]) agrupados[cat] = [];
         agrupados[cat].push(proj);
     });
 
-    const catKeys = Object.keys(agrupados);
-    if (catKeys.length === 0) return;
+    const catKeys = Object.keys(categoriasConfig);
 
+    // Renderizar Abas Superiores das Categorias Principais
     let tabsHtml = '';
     catKeys.forEach((catKey, index) => {
-        const config = categoriasConfig[catKey] || { id: catKey, title: `📁 ${catKey}`, label: `/${catKey}`, desc: 'Projetos' };
+        const config = categoriasConfig[catKey];
         const projsCat = agrupados[catKey];
         const isActive = index === 0;
 
@@ -65,9 +69,10 @@ function renderizarAbasCategorias(projetos) {
     });
     tabsContainer.innerHTML = tabsHtml;
 
+    // Renderizar Conteúdos e File Explorers Individuais para cada Categoria
     let contentsHtml = '';
     catKeys.forEach((catKey, index) => {
-        const config = categoriasConfig[catKey] || { id: catKey, title: `📁 ${catKey}`, label: `/${catKey}`, desc: 'Projetos' };
+        const config = categoriasConfig[catKey];
         const projsCat = agrupados[catKey];
         const isActive = index === 0;
 
@@ -84,25 +89,32 @@ function renderizarAbasCategorias(projetos) {
             </div>
         `;
 
-        // FILE EXPLORER SUPERIOR: Cada pasta é um projeto
+        if (projsCat.length === 0) {
+            contentsHtml += `<div class="text-center py-12 text-slate-500 font-mono text-xs">Sem projetos nesta categoria de momento.</div></div>`;
+            return;
+        }
+
+        // FILE EXPLORER INTERNO DA CATEGORIA (Pastas de cada projeto em cima)
         contentsHtml += `<div class="space-y-6" id="explorer-wrapper-${config.id}">`;
         contentsHtml += `<div class="flex flex-wrap items-center gap-2 p-2.5 rounded-2xl bg-slate-900/90 border border-slate-800">`;
         
         projsCat.forEach((proj, pIdx) => {
             const isProjActive = pIdx === 0;
+            const projKey = proj.id || `p-${pIdx}`;
             contentsHtml += `
-                <button onclick="switchProjectFolder('${config.id}', ${proj.id || pIdx})" id="proj-tab-${config.id}-${proj.id || pIdx}" class="px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 ${isProjActive ? 'bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-md' : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'}">
-                    <span>📂</span> <span>${proj.nome}</span>
+                <button onclick="switchProjectFolder('${config.id}', '${projKey}')" id="proj-tab-${config.id}-${projKey}" class="px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 ${isProjActive ? 'bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-md' : 'bg-slate-950 text-slate-400 border border-slate-800 hover:text-white'}">
+                    <span>📂</span> <span>/${proj.nome.toLowerCase().replace(/\s+/g, '-')}</span>
                 </button>
             `;
         });
         contentsHtml += `</div>`;
 
-        // INFORMAÇÕES DA PASTA DO PROJETO ATIVO (Nome, Link, Logo, Imagens e Descrição)
+        // INFORMAÇÕES DO PROJETO SELECIONADO (Nome, Link, Logo, Imagens [2 a 8] e Descrição)
         projsCat.forEach((proj, pIdx) => {
             const isProjActive = pIdx === 0;
+            const projKey = proj.id || `p-${pIdx}`;
 
-            // Logo (URL ou ícone/emoji)
+            // Tratamento do Logo
             let logoHtml = '⚡';
             if (proj.logo) {
                 if (proj.logo.startsWith('http') || proj.logo.startsWith('/assets/')) {
@@ -112,7 +124,7 @@ function renderizarAbasCategorias(projetos) {
                 }
             }
 
-            // Imagens (entre 2 a 8 imagens)
+            // Tratamento da Galeria de Imagens (2 a 8 imagens)
             let printsHtml = '';
             let imagensArray = [];
             if (proj.imagens) {
@@ -141,7 +153,7 @@ function renderizarAbasCategorias(projetos) {
             }
 
             contentsHtml += `
-                <div id="proj-panel-${config.id}-${proj.id || pIdx}" class="studio-card-glow p-6 sm:p-8 space-y-6 ${isProjActive ? '' : 'hidden'}">
+                <div id="proj-panel-${config.id}-${projKey}" class="studio-card-glow p-6 sm:p-8 space-y-6 ${isProjActive ? '' : 'hidden'}">
                     <div class="flex items-start justify-between gap-4 flex-wrap">
                         <div class="flex items-center gap-4">
                             <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-700/80 flex items-center justify-center text-3xl shadow-lg shrink-0 overflow-hidden">
@@ -176,6 +188,7 @@ function renderizarAbasCategorias(projetos) {
     window._catKeys = catKeys;
 }
 
+// Alternar entre categorias principais (Discord Bots, Software Tools, Game Dev, Web Dev)
 function switchCategory(activeId) {
     if (!window._catKeys) return;
     window._catKeys.forEach(id => {
@@ -197,7 +210,8 @@ function switchCategory(activeId) {
     });
 }
 
-function switchProjectFolder(catId, projId) {
+// Alternar entre pastas de projetos no File Explorer superior de cada categoria
+function switchProjectFolder(catId, projKey) {
     const wrapper = document.getElementById('explorer-wrapper-' + catId);
     if (!wrapper) return;
 
@@ -205,7 +219,7 @@ function switchProjectFolder(catId, projId) {
     const panels = wrapper.querySelectorAll(`[id^="proj-panel-${catId}-"]`);
 
     buttons.forEach(btn => {
-        if (btn.id === `proj-tab-${catId}-${projId}`) {
+        if (btn.id === `proj-tab-${catId}-${projKey}`) {
             btn.className = "px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 bg-amber-500/25 text-amber-300 border border-amber-500/50 shadow-md";
         } else {
             btn.className = "px-4.5 py-2.5 rounded-xl font-mono text-xs font-semibold transition-all flex items-center gap-2 bg-slate-950 text-slate-400 border border-slate-800 hover:text-white";
@@ -213,7 +227,7 @@ function switchProjectFolder(catId, projId) {
     });
 
     panels.forEach(panel => {
-        if (panel.id === `proj-panel-${catId}-${projId}`) {
+        if (panel.id === `proj-panel-${catId}-${projKey}`) {
             panel.classList.remove('hidden');
         } else {
             panel.classList.add('hidden');
@@ -270,7 +284,7 @@ if (input && body) {
             if (cmd === 'pauer --help' || cmd === 'help') {
                 resp = "COMANDOS DISPONÍVEIS:\n • pauer --services : Ver pastas de serviços\n • pauer --github   : Abrir GitHub (fsafaradias)\n • pauer --rescue   : Ativar SOS técnico urgente\n • clear            : Limpar consola";
             } else if (cmd === 'pauer --services') {
-                resp = "File explorers e pastas de projetos carregados da base de dados.";
+                resp = "File explorers por categoria carregados com sucesso.";
             } else if (cmd === 'pauer --github') {
                 window.open('https://github.com/fsafaradias', '_blank');
                 resp = "A abrir https://github.com/fsafaradias...";
